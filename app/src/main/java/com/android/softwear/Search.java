@@ -1,0 +1,359 @@
+package com.android.softwear;
+
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.app.SearchManager;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.SearchView;
+import android.widget.TextView;
+
+import com.android.softwear.models.Product;
+import com.android.softwear.process.ConnectDB;
+import com.android.softwear.process.ProductAdapter;
+import com.android.softwear.process.SearchQuery;
+import com.squareup.picasso.Picasso;
+
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+
+/**
+ * Created by Michael on 10/6/2015.
+ */
+public class Search extends Activity {
+
+    // placeholder that you will be updating with the database data
+    static ArrayList<Product> products = new ArrayList<>();
+    ProductAdapter adaptProduct;
+    static String inputSearch;
+    static int pos;
+    static View currentView;
+    static ProductAdapter.ViewHolder viewHolder;
+    static AdapterView<?> par;
+    static String URI;
+    Bitmap bit;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_product_search);
+        new returnAllProducts().execute();
+        ListView listview = (ListView) findViewById(R.id.list_view);
+        adaptProduct = new ProductAdapter(Search.this, 0, products);
+        listview.setOnItemClickListener(new ListView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+
+                //setPos(position);
+                //setCurrentView(v);
+                //par = parent;
+                //setPar(parent);
+                Context c;
+                //setContentView(R.layout.activity_product_view);
+                //new returnProductView().execute();
+
+                //Intent mainIntent = new Intent(Search.this, R.layout.activity_product_view, ProductAdapter.class);
+                //startActivity(mainIntent);
+                View vi = null;
+                LayoutInflater inflater = null;
+
+                try {
+                    setContentView(R.layout.activity_product_view);
+                    //vi = inflater.inflate(R.layout.activity_product_view, parent, false);
+                    ProductAdapter.ViewHolder holder = new ProductAdapter.ViewHolder();
+                    holder.product_name = (TextView) findViewById(R.id.product_name);
+                    holder.product_dept = (TextView) findViewById(R.id.product_dept);
+                    holder.product_desc = (TextView) findViewById(R.id.product_desc);
+                    holder.product_price = (TextView) findViewById(R.id.product_price);
+                    holder.product_qty = (TextView) findViewById(R.id.product_qty);
+                    //vi.setTag(holder);
+
+                    URI = "http://www.michaelscray.com/Softwear/graphics/";
+                    String dept = "Dept: ";
+                    String money = "$";
+                    String qty = "Qty: ";
+                    URI += products.get(position).getProduct_img();
+                    Uri uris = Uri.parse(URI + products.get(position).getProduct_img());
+                    URI uri = java.net.URI.create(URI);
+                    holder.product_name.setText(products.get(position).getProduct_name());
+                    holder.product_desc.setText(products.get(position).getProduct_desc());
+                    holder.product_dept.setText(dept + products.get(position).getProduct_dept());
+                    holder.product_price.setText(money + String.valueOf(products.get(position).getPrice()));
+                    holder.product_qty.setText(qty + String.valueOf(products.get(position).getProduct_qty()));
+                    //holder.product_img.setImageBitmap(getBitmap(URI));
+                    //Picasso.with(getApplication()).load(URI + products.get(position).getProduct_img()).into(holder.product_img);
+
+                    try {
+                        pos = position;
+                        setPos(pos);
+                        setURI(URI);
+                        setCurrentView(v);
+                        setCurrentHolder(holder);
+                        new getImageView().execute();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+        listview.setAdapter(adaptProduct);
+        Intent intent = getIntent();
+        if(Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            inputSearch = intent.getStringExtra(SearchManager.QUERY);
+            try {
+                new returnProductView().execute();
+            }
+            catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the options menu from XML
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.search_menu, menu);
+        //getMenuInflater().inflate(R.menu.search_menu, menu);
+
+        // Get the SearchView and set the searchable configuration
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        // Assumes current activity is the searchable activity
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setIconifiedByDefault(false); //Do not iconify the widget; expand by default
+
+        return true;
+    }
+
+
+
+    private class returnProductView extends AsyncTask<Void, View, Void> {
+
+        ProductAdapter.ViewHolder holder;
+        View vi = null;
+        LayoutInflater inflater = null;
+
+        protected void onPreExecute() {
+            try {
+                if (vi == null) {
+                    vi = inflater.inflate(R.layout.activity_product_view, getPar(), false);
+                    ProductAdapter.ViewHolder holder = new ProductAdapter.ViewHolder();
+                    holder.product_name = (TextView) vi.findViewById(R.id.product_name);
+                    holder.product_dept = (TextView) vi.findViewById(R.id.product_dept);
+                    holder.product_desc = (TextView) vi.findViewById(R.id.product_desc);
+                    holder.product_price = (TextView) vi.findViewById(R.id.product_price);
+                    holder.product_qty = (TextView) vi.findViewById(R.id.product_qty);
+                    vi.setTag(holder);
+
+                } else {
+                    holder = (ProductAdapter.ViewHolder) vi.getTag();
+                }
+                String URI = "http://www.michaelscray.com/Softwear/graphics/";
+                String dept = "Dept: ";
+                String money = "$";
+                String qty = "Qty: ";
+                int pos = getPos();
+                URI += products.get(pos).getProduct_img();
+                holder.product_name.setText(products.get(pos).getProduct_name());
+                holder.product_desc.setText(products.get(pos).getProduct_desc());
+                holder.product_dept.setText(dept + products.get(pos).getProduct_dept());
+                holder.product_price.setText(money + String.valueOf(products.get(pos).getPrice()));
+                holder.product_qty.setText(qty + String.valueOf(products.get(pos).getProduct_qty()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        protected Void doInBackground(Void... arg0)  {
+
+            //new ProductAdapter.getImageView().execute();
+            //adaptProduct = new ProductAdapter(Search.this, position, products);
+            //v.getContext().getResources();
+            //v.(adaptProduct);
+            return null;
+        }
+
+        protected View onPostExecute() {
+            return vi;
+        }
+
+    }
+
+    private class returnAllProducts extends AsyncTask<Void, Void, ArrayList<Product>> {
+
+        String queryResult = "";
+        Product product = null;
+        ProgressDialog pDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(Search.this);
+            pDialog.setTitle("Please wait");
+            pDialog.setMessage("Loading products...");
+            pDialog.setIndeterminate(true);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+
+        protected ArrayList<Product> doInBackground(Void... arg0) {
+            //protected Void doInBackground(Void... arg0) {
+
+            try {
+                queryResult = "Database connection success\n";
+                Connection conn = ConnectDB.getConnection();
+                PreparedStatement ps = conn.prepareStatement("SELECT * FROM Inventory");
+                ResultSet result = ps.executeQuery();
+
+                while (result.next()) {
+
+                    product = new Product();
+                    product.setSKU(result.getInt("SKU"));
+                    product.setProduct_name(result.getString("Name"));
+
+                    product.setProduct_dept(result.getString("Department"));
+                    product.setPrice(result.getFloat("Price"));
+                    product.setProduct_desc(result.getString("Description"));
+                    product.setProduct_img(result.getString("Image"));
+                    product.setProduct_qty(result.getInt("Quantity"));
+
+                    products.add(product);
+                }
+                pDialog.dismiss();
+                conn.close();
+            }
+
+            catch(Exception e) {
+                e.printStackTrace();
+                queryResult = "Database connection failure!\n" + e.toString();
+            }
+            //return null;
+            return products;
+
+        }
+
+        protected void onPostExecute() {
+            //getData.setText(queryResult);
+            //return products;
+
+        }
+
+    }
+
+    public class getImageView extends AsyncTask<Void, Void, Void> {
+        String tempURI = getURI();
+        int tempPos = getPos();
+        View vi = getCurrentView();
+        ProductAdapter.ViewHolder tempHolder = getCurrentHolder();
+
+        protected void onPreExecute() {
+            tempHolder.product_img = (ImageView) vi.findViewById(R.id.icon);
+            vi.setTag(tempHolder);
+        }
+
+        protected Void doInBackground(Void... arg0)  {
+            bit = getBitmap(tempURI);
+            return null;
+        }
+
+        protected void onPostExecute(Void result) {
+            tempHolder.product_img.setImageBitmap(bit);
+            //listview.setAdapter(adaptProduct);
+        }
+
+    }
+
+    public Bitmap getBitmap(String src) {
+        Bitmap bm = null;
+        try {
+            URL url = new URL(src);
+            URLConnection conn = url.openConnection();
+            conn.connect();
+            InputStream input = conn.getInputStream();
+            BufferedInputStream bis = new BufferedInputStream(input);
+            bm = BitmapFactory.decodeStream(bis);
+            bis.close();
+            input.close();
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return bm;
+    }
+
+    public void setURI(String URI) {
+        this.URI = URI;
+    }
+
+    public String getURI() {
+        return URI;
+    }
+
+    public void setPos(int position) {
+        this.pos = position;
+    }
+
+    public int getPos() {
+        return pos;
+    }
+
+    public void setCurrentView(View currentView) {
+        this.currentView = currentView;
+    }
+
+    public View getCurrentView() {
+        return currentView;
+    }
+
+    public void setCurrentHolder(ProductAdapter.ViewHolder viewHolder) {
+        this.viewHolder = viewHolder;
+    }
+
+    public ProductAdapter.ViewHolder getCurrentHolder() {
+        return viewHolder;
+    }
+
+    public void setPar(AdapterView par) {
+        this.par = par;
+    }
+
+    public AdapterView getPar() {
+        return par;
+    }
+
+
+}

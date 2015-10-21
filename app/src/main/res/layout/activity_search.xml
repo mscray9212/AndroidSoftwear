@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="110dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/bg"
+    tools:context=".MainActivity">
+    android:padding="5dp">
+
+    <!-- Display Product image, Product name, Product description, and Product price -->
+
+    <!-- Image -->
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignParentTop="true"
+        android:contentDescription="TODO"
+        android:src="@drawable/missing"
+        android:layout_alignParentBottom="true" />
+
+    <!-- Product name -->
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="15dip"
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentTop="true"
+        android:id="@+id/product_name"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:text="Product"
+        android:textSize="14sp"
+        android:paddingLeft="5dp"
+        android:layout_toEndOf="@+id/icon"
+        android:layout_alignParentRight="true"
+        android:layout_alignWithParentIfMissing="true"
+        android:textStyle="bold"
+        android:paddingBottom="-8dp"
+        android:height="20dp" />
+
+    <!-- Product description -->
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/product_desc"
+        android:layout_alignParentRight="true"
+        android:layout_alignWithParentIfMissing="true"
+        android:gravity="center_vertical"
+        android:text="Description"
+        android:textSize="10sp"
+        android:paddingLeft="5dp"
+        android:layout_above="@+id/product_name"
+        android:layout_toEndOf="@+id/icon"
+        android:layout_alignParentBottom="true"
+        android:paddingTop="5dp"
+        android:paddingBottom="-8dp"
+        android:layout_below="@+id/product_dept" />
+
+    <!-- Product price -->
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/product_price"
+        android:layout_alignWithParentIfMissing="true"
+        android:text="Price"
+        android:textSize="14sp"
+        android:paddingRight="8dp"
+        android:gravity="right"
+        android:height="20dp"
+        android:layout_below="@+id/product_name"
+        android:layout_toEndOf="@+id/icon" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/product_dept"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:text="Department"
+        android:textSize="14sp"
+        android:paddingLeft="5dp"
+        android:layout_alignWithParentIfMissing="true"
+        android:paddingBottom="-5dp"
+        android:layout_above="@+id/product_qty"
+        android:layout_toEndOf="@+id/icon" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Qty:"
+        android:id="@+id/product_qty"
+        android:textSize="14sp"
+        android:paddingRight="8dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true" />
+    <!--
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View"
+        android:id="@+id/view_btn"
+        android:layout_below="@+id/product_dept"
+        android:layout_alignParentEnd="true" />
+    android:textStyle="bold"/>
+    -->
+</RelativeLayout>
