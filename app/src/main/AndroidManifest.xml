@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="process.Login"
+            android:name=".Login"
             android:label="@string/user_login" >
             <intent-filter>
                 <action android:name="com.android.softwear.process.Login" />
@@ -31,7 +31,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="process.Logout"
+            android:name=".Logout"
             android:label="@string/user_logout" >
             <intent-filter>
                 <action android:name="com.android.softwear.process.Logout" />
@@ -40,7 +40,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="process.Register"
+            android:name=".Register"
             android:label="@string/user_register" >
             <intent-filter>
                 <action android:name="com.android.softwear.process.Register" />
@@ -49,7 +49,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="process.Cart"
+            android:name=".Cart"
             android:label="@string/user_cart" >
             <intent-filter>
                 <action android:name="com.android.softwear.process.Cart" />

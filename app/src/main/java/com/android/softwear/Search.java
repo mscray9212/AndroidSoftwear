@@ -57,7 +57,11 @@ public class Search extends Activity {
     static View currentView;
     static ProductAdapter.ViewHolder viewHolder;
     static AdapterView<?> par;
-    static String URI;
+    String URI;
+    private String user;
+    private Integer SKU;
+    private float price;
+    private TextView getData;
     Bitmap bit;
 
 
@@ -122,6 +126,25 @@ public class Search extends Activity {
                         e.printStackTrace();
                     }
 
+                    Button addToCart = (Button) findViewById(R.id.cart_btn);
+                    addToCart.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            /*  Get User_Name, SKU, Price, and Shipped   */
+                            user = MainActivity.currentAccount.getUsername();
+                            SKU = products.get(getPos()).getSKU();
+                            //String desc = products.get(getPos()).getProduct_desc();
+                            //String dept = products.get(getPos()).getProduct_dept();
+                            price = products.get(getPos()).getPrice();
+                            //int qty = products.get(getPos()).getProduct_qty();
+                            //String img = products.get(getPos()).getProduct_img();
+                            setUser(user);
+                            setSKU(SKU);
+                            setPrice(price);
+                            new addItemToCart().execute();
+                        }
+                    });
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -146,16 +169,17 @@ public class Search extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the options menu from XML
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.search_menu, menu);
+        inflater.inflate(R.menu.menu_main, menu);
         //getMenuInflater().inflate(R.menu.search_menu, menu);
 
+        /*
         // Get the SearchView and set the searchable configuration
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         // Assumes current activity is the searchable activity
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setIconifiedByDefault(false); //Do not iconify the widget; expand by default
-
+        */
         return true;
     }
 
@@ -274,6 +298,59 @@ public class Search extends Activity {
 
     }
 
+    public class addItemToCart extends AsyncTask<Void, Void, Void> {
+        String tempUser = getUser();
+        int tempSKU = getSKU();
+        float tempPrice = getPrice();
+        String queryResult = "";
+        ProgressDialog pDialog;
+
+        protected void onPreExecute() {
+            //bench warmer
+            if(tempUser == null) {
+                pDialog = new ProgressDialog(Search.this);
+                pDialog.setTitle("Login First");
+                pDialog.setMessage("Please, sign in to use your cart");
+                pDialog.show();
+            }
+        }
+
+        protected Void doInBackground(Void... arg0)  {
+
+            if(tempUser != null) {
+                try {
+                    Connection conn = ConnectDB.getConnection();
+                    String queryString = "INSERT INTO Orders (User_Name, SKU, Price, Shipped) VALUES (?, ?, ?, ?)";
+                /*  Insert User_Name, SKU, Price, and Shipped   */
+                    PreparedStatement st = conn.prepareStatement(queryString);
+                    st.setString(1, tempUser);
+                    st.setInt(2, tempSKU);
+                    st.setFloat(3, tempPrice);
+                    st.setString(4, "N");
+                    st.executeUpdate();
+
+                    queryResult = ("Item: " + tempSKU + " added to your cart!");
+                    conn.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    queryResult = "Database connection failure!\n" + e.toString();
+                }
+                //result = ProductQuery.returnProducts(result);
+            }
+            else {
+                pDialog.dismiss();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(Void result) {
+            //bench cooler
+            //getData.setText(queryResult);
+            super.onPostExecute(result);
+        }
+
+    }
+
     public class getImageView extends AsyncTask<Void, Void, Void> {
         String tempURI = getURI();
         int tempPos = getPos();
@@ -353,6 +430,30 @@ public class Search extends Activity {
 
     public AdapterView getPar() {
         return par;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setSKU(Integer SKU) {
+        this.SKU = SKU;
+    }
+
+    public Integer getSKU() {
+        return SKU;
+    }
+
+    public void setPrice(float price) {
+        this.price = price;
+    }
+
+    public float getPrice() {
+        return price;
     }
 
 

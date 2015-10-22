@@ -1,6 +1,5 @@
 package com.android.softwear;
 
-import android.app.ActionBar;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -8,32 +7,21 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.softwear.models.Account;
 import com.android.softwear.models.Product;
 import com.android.softwear.process.ProductAdapter;
 import com.android.softwear.process.ConnectDB;
-import com.android.softwear.process.Login;
-import com.android.softwear.process.ProductQuery;
-import com.android.softwear.process.Register;
-import com.android.softwear.process.SearchQuery;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,6 +30,9 @@ public class MainActivity extends AppCompatActivity {
     static String searchString = "";
     private TextView getData;
     ListAdapter adapter;
+    private String user;
+    Menu menu;
+    //int cartItems =
 
     //public static Connection getConnect = ConnectDB.getConnection();
 
@@ -59,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        this.menu = menu;
         return true;
     }
 
@@ -68,6 +60,9 @@ public class MainActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        if(currentAccount != null) {
+            new getCartIcon().execute();
+        }
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_login){
@@ -117,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (id == R.id.action_cart) {
-
+            startActivity(new Intent(getApplicationContext(), Cart.class));
         }
 
         if (id == R.id.action_search) {
@@ -412,6 +407,69 @@ public class MainActivity extends AppCompatActivity {
         Register.register(account);
         setUser(account);
     }*/
+
+    public void getCartItems(int cart) {
+
+        MenuItem cartMenuItem = (MenuItem) menu.findItem(R.id.action_cart);
+        if (cart == 0) {
+            cartMenuItem.setIcon(R.drawable.cart0);
+        }
+        if (cart == 1) {
+            cartMenuItem.setIcon(R.drawable.cart1);
+        }
+        if (cart == 2) {
+            cartMenuItem.setIcon(R.drawable.cart2);
+        }
+        if (cart == 3) {
+            cartMenuItem.setIcon(R.drawable.cart3);
+        }
+        if (cart == 4) {
+            cartMenuItem.setIcon(R.drawable.cart4);
+        }
+        if (cart == 5) {
+            cartMenuItem.setIcon(R.drawable.cart5);
+        }
+        if (cart > 5) {
+            cartMenuItem.setIcon(R.drawable.cart5plus);
+        }
+        if (cart > 10) {
+            cartMenuItem.setIcon(R.drawable.cart10plus);
+        }
+    }
+
+    public class getCartIcon extends AsyncTask<Void, Void, Void> {
+        String tempUser = currentAccount.getUsername();
+        int cartNum = 0;
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            if(tempUser != null) {
+                try {
+                    Connection conn = ConnectDB.getConnection();
+                    String queryString = "SELECT * FROM Orders";
+
+                    PreparedStatement st = conn.prepareStatement(queryString);
+                    //st.setString(1, tempUser);
+
+                    final ResultSet result = st.executeQuery(queryString);
+
+                    while (result.next()) {
+                        if(result.getString("User_Name").equals(tempUser)) {
+                            cartNum++;
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        protected void onPostExecute(Void result) {
+            getCartItems(cartNum);
+            super.onPostExecute(result);
+        }
+    }
 
 
     public void setUser(Account acct) {
