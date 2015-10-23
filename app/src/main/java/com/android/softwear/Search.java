@@ -62,6 +62,7 @@ public class Search extends Activity {
     private Integer SKU;
     private float price;
     private TextView getData;
+    static boolean updatedCart = false;
     Bitmap bit;
 
 
@@ -80,7 +81,7 @@ public class Search extends Activity {
                 //setCurrentView(v);
                 //par = parent;
                 //setPar(parent);
-                Context c;
+                final Context c;
                 //setContentView(R.layout.activity_product_view);
                 //new returnProductView().execute();
 
@@ -141,6 +142,7 @@ public class Search extends Activity {
                             setUser(user);
                             setSKU(SKU);
                             setPrice(price);
+                            updatedCart = true;
                             new addItemToCart().execute();
                         }
                     });
@@ -237,7 +239,7 @@ public class Search extends Activity {
 
     }
 
-    private class returnAllProducts extends AsyncTask<Void, Void, ArrayList<Product>> {
+    private class returnAllProducts extends AsyncTask<Void, Void, Void> {
 
         String queryResult = "";
         Product product = null;
@@ -254,7 +256,8 @@ public class Search extends Activity {
             pDialog.show();
         }
 
-        protected ArrayList<Product> doInBackground(Void... arg0) {
+        @Override
+        protected Void doInBackground(Void... arg0) {
             //protected Void doInBackground(Void... arg0) {
 
             try {
@@ -285,12 +288,13 @@ public class Search extends Activity {
                 e.printStackTrace();
                 queryResult = "Database connection failure!\n" + e.toString();
             }
-            //return null;
-            return products;
+            return null;
+            //return products;
 
         }
 
-        protected void onPostExecute() {
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
             //getData.setText(queryResult);
             //return products;
 
@@ -346,7 +350,7 @@ public class Search extends Activity {
         protected void onPostExecute(Void result) {
             //bench cooler
             //getData.setText(queryResult);
-            super.onPostExecute(result);
+            //super.onPostExecute(result);
         }
 
     }
@@ -368,6 +372,7 @@ public class Search extends Activity {
         }
 
         protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
             tempHolder.product_img.setImageBitmap(bit);
             //listview.setAdapter(adaptProduct);
         }
@@ -454,6 +459,10 @@ public class Search extends Activity {
 
     public float getPrice() {
         return price;
+    }
+
+    public static boolean cartStatus() {
+        return updatedCart;
     }
 
 

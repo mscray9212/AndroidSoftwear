@@ -34,7 +34,7 @@
             android:name=".Logout"
             android:label="@string/user_logout" >
             <intent-filter>
-                <action android:name="com.android.softwear.process.Logout" />
+                <action android:name="com.android.softwear.Logout" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -43,7 +43,7 @@
             android:name=".Register"
             android:label="@string/user_register" >
             <intent-filter>
-                <action android:name="com.android.softwear.process.Register" />
+                <action android:name="com.android.softwear.Register" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -52,7 +52,7 @@
             android:name=".Cart"
             android:label="@string/user_cart" >
             <intent-filter>
-                <action android:name="com.android.softwear.process.Cart" />
+                <action android:name="com.android.softwear.Cart" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>

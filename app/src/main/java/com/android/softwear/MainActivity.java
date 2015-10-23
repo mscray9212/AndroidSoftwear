@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import com.android.softwear.interfaces.CartChangeListener;
 import com.android.softwear.models.Account;
 import com.android.softwear.models.Product;
 import com.android.softwear.process.ProductAdapter;
@@ -27,10 +28,12 @@ public class MainActivity extends AppCompatActivity {
 
     //ProductQuery products = new ProductQuery();
     static Account currentAccount = new Account();
+    static CartChangeListener cartChangeListener;
     static String searchString = "";
     private TextView getData;
     ListAdapter adapter;
     private String user;
+    boolean addedCart = false;
     Menu menu;
     //int cartItems =
 
@@ -44,6 +47,9 @@ public class MainActivity extends AppCompatActivity {
         //actionBar.setDisplayShowTitleEnabled(false);
         //actionBar.show();
         getData = (TextView) findViewById(R.id.textView_hello);
+        if(Search.cartStatus()) {
+            new getCartIcon().execute();
+        }
     }
 
     @Override
@@ -60,9 +66,6 @@ public class MainActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if(currentAccount != null) {
-            new getCartIcon().execute();
-        }
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_login){
@@ -112,10 +115,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (id == R.id.action_cart) {
+            new getCartIcon().execute();
             startActivity(new Intent(getApplicationContext(), Cart.class));
         }
 
         if (id == R.id.action_search) {
+            new getCartIcon().execute();
             startActivity(new Intent(getApplicationContext(), Search.class));
         }
         /*
@@ -138,9 +143,10 @@ public class MainActivity extends AppCompatActivity {
             currentAccount.setLast_name("");
             currentAccount.setEmail("");
             currentAccount.setPassword("");
-            currentAccount.setUsername("");
+            currentAccount.setUsername("Guest");
             setContentView(R.layout.activity_main);
             setUser(currentAccount);
+            new getCartIcon().execute();
         }
 
         return super.onOptionsItemSelected(item);
@@ -184,6 +190,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Void result) {
             setUser(currentAccount);
             getData.setText(queryResult);
+            new getCartIcon().execute();
             super.onPostExecute(result);
         }
     }

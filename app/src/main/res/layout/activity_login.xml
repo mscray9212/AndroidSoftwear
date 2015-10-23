@@ -118,16 +118,6 @@
             android:orientation="horizontal" >
 
             <Button
-                android:id="@+id/logB"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="5dp"
-                android:layout_weight="1"
-                android:background="@color/green"
-                android:text="@string/action_login"
-                android:textColor="#ffffff" />
-
-            <Button
                 android:id="@+id/button2"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -136,6 +126,16 @@
                 android:background="@color/blue"
                 android:text="@string/action_register"
                 android:onClick="userReg"
+                android:textColor="#ffffff" />
+
+            <Button
+                android:id="@+id/logB"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@color/green"
+                android:text="@string/action_login"
                 android:textColor="#ffffff" />
 
 

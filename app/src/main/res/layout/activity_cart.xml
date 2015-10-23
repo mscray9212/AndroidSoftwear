@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/llSliderCart"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#5e80ab"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/summary"
+            android:layout_width="254dp"
+            android:layout_height="55dp"
+            android:gravity="center"
+            android:text="CART SUMMARY"
+            android:textColor="#ffffff"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@+id/checkout_btn" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:text="Checkout"
+            android:id="@+id/checkout_btn"
+            android:background="@drawable/shape"
+            android:layout_alignParentBottom="false"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentRight="true"
+            android:paddingLeft="1dp"
+            android:paddingTop="1dp"
+            android:paddingRight="1dp"
+            android:paddingBottom="1dp"
+            android:textStyle="bold"
+            android:textColor="#ffffff" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/cart_rows"
+        android:background="#ffffff"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="right"
+            android:paddingRight="20dp"
+            android:text="Subtotal"
+            android:textColor="#a4a4a4"
+            android:textSize="@dimen/text_normal" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/vertical_divider_welcome" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="right"
+            android:paddingLeft="20dp"
+            android:text="@string/currency"
+            android:textColor="#a4a4a4"
+            android:textSize="@dimen/text_normal" />
+
+        <TextView
+            android:id="@+id/textView_subTotal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="right"
+            android:paddingRight="20dp"
+            android:text="0.00"
+            android:textColor="#a4a4a4"
+            android:textSize="@dimen/text_normal" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/vertical_divider_welcome" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/cart_rows"
+        android:background="#ffffff"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="right"
+            android:paddingRight="20dp"
+            android:text="Shipping"
+            android:textColor="#a4a4a4"
+            android:textSize="@dimen/text_normal" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/vertical_divider_welcome" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="right"
+            android:paddingLeft="20dp"
+            android:text="@string/currency"
+            android:textColor="#a4a4a4"
+            android:textSize="@dimen/text_normal" />
+
+        <TextView
+            android:id="@+id/textView_shipping"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="right"
+            android:paddingRight="20dp"
+            android:text="0.00"
+            android:textColor="#a4a4a4"
+            android:textSize="@dimen/text_normal" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/vertical_divider_welcome" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/cart_rows"
+        android:background="#ffffff"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="right"
+            android:paddingRight="20dp"
+            android:text="Tax"
+            android:textColor="#a4a4a4"
+            android:textSize="@dimen/text_normal" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/vertical_divider_welcome" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="right"
+            android:paddingLeft="20dp"
+            android:text="@string/percent"
+            android:textColor="#a4a4a4"
+            android:textSize="@dimen/text_normal" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="right"
+            android:paddingRight="20dp"
+            android:text="0"
+            android:textColor="#a4a4a4"
+            android:textSize="@dimen/text_normal"
+            android:id="@+id/textView_taxes" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/vertical_divider_welcome" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/cart_rows"
+        android:background="#ffffff"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="right"
+            android:paddingRight="20dp"
+            android:text="Total"
+            android:textStyle="bold"
+            android:textColor="@color/blue"
+            android:textSize="@dimen/text_title" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/vertical_divider_welcome" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="right"
+            android:paddingLeft="20dp"
+            android:text="@string/currency"
+            android:textStyle="bold"
+            android:textColor="@color/blue"
+            android:textSize="@dimen/text_title" />
+
+        <TextView
+            android:id="@+id/textView_total"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="right"
+            android:textStyle="bold"
+            android:paddingRight="20dp"
+            android:text="0.00"
+            android:textColor="@color/blue"
+            android:textSize="@dimen/text_title" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/vertical_divider_welcome" />
+
+
+</LinearLayout>

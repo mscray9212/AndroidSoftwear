@@ -26,4 +26,7 @@
     <string name="hint">Search products..</string>
     <string name="try_me">Add to Cart</string>
 
+    <string name="currency"> $</string>
+    <string name="percent"> %</string>
+
 </resources>
