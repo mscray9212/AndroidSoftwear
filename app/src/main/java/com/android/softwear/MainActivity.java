@@ -1,5 +1,6 @@
 package com.android.softwear;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -15,7 +16,7 @@ import android.widget.TextView;
 import com.android.softwear.interfaces.CartChangeListener;
 import com.android.softwear.models.Account;
 import com.android.softwear.models.Product;
-import com.android.softwear.process.ProductAdapter;
+import com.android.softwear.process.ProductsAdapter;
 import com.android.softwear.process.ConnectDB;
 
 import java.sql.Connection;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     //ProductQuery products = new ProductQuery();
+    static ArrayList<Product> products = new ArrayList<>();
     static Account currentAccount = new Account();
     static CartChangeListener cartChangeListener;
     static String searchString = "";
@@ -42,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        new retrievAllProducts().execute();
         setContentView(R.layout.activity_main);
         //final ActionBar actionBar = getActionBar();
         //actionBar.setDisplayShowTitleEnabled(false);
@@ -304,8 +307,8 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Void result) {
             getData.setText(queryResult);
             /*
-            ProductAdapter adbProduct;
-            adbProduct = new ProductAdapter(MainActivity.this, 0, products);
+            ProductsAdapter adbProduct;
+            adbProduct = new ProductsAdapter(MainActivity.this, 0, products);
             ListView listview = (ListView) findViewById(R.id.lvShopItems);
             listview.setAdapter(adbProduct);
             */
@@ -355,8 +358,8 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Void result) {
             getData.setText(queryResult);
 
-            ProductAdapter adbProduct;
-            //adbProduct = new ProductAdapter(MainActivity.this, 0, products);
+            ProductsAdapter adbProduct;
+            //adbProduct = new ProductsAdapter(MainActivity.this, 0, products);
             //ListView listview = (ListView) findViewById(R.id.lvShopItems);
             //listview.setAdapter(adbProduct);
 
@@ -493,8 +496,77 @@ public class MainActivity extends AppCompatActivity {
         textName.setText(aloha);
     }
 
+
+
     public Account getAccount() {
         return currentAccount;
+    }
+
+    private class retrievAllProducts extends AsyncTask<Void, Void, Void> {
+
+        String queryResult = "";
+        Product product = null;
+        ProgressDialog pDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(MainActivity.this);
+            pDialog.setTitle("Please wait");
+            pDialog.setMessage("Loading products...");
+            pDialog.setIndeterminate(true);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            //protected Void doInBackground(Void... arg0) {
+
+            try {
+                queryResult = "Database connection success\n";
+                Connection conn = ConnectDB.getConnection();
+                PreparedStatement ps = conn.prepareStatement("SELECT * FROM Inventory");
+                ResultSet result = ps.executeQuery();
+
+                while (result.next()) {
+
+                    product = new Product();
+                    product.setSKU(result.getInt("SKU"));
+                    product.setProduct_name(result.getString("Name"));
+
+                    product.setProduct_dept(result.getString("Department"));
+                    product.setPrice(result.getFloat("Price"));
+                    product.setProduct_desc(result.getString("Description"));
+                    product.setProduct_img(result.getString("Image"));
+                    product.setProduct_qty(result.getInt("Quantity"));
+
+                    products.add(product);
+                }
+                pDialog.dismiss();
+                conn.close();
+            }
+
+            catch(Exception e) {
+                e.printStackTrace();
+                queryResult = "Database connection failure!\n" + e.toString();
+            }
+            return null;
+            //return products;
+
+        }
+
+        protected void onPostExecute(Void result) {
+            //super.onPostExecute(result);
+            //getData.setText(queryResult);
+            //return products;
+
+        }
+
+    }
+
+    public static ArrayList<Product> getProducts() {
+        return products;
     }
 
 

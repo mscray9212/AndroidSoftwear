@@ -36,7 +36,7 @@ import java.util.ArrayList;
  */
 public class ProductAdapter extends ArrayAdapter<Product> {
 
-    private Activity activity;
+    private Context activity;
     private ArrayList<Product> products;
     private static LayoutInflater inflater = null;
     public static View currentView;
@@ -49,7 +49,7 @@ public class ProductAdapter extends ArrayAdapter<Product> {
     static String URI;
 
 
-    public ProductAdapter(Activity activity, int textViewResourceId, ArrayList<Product> product) {
+    public ProductAdapter(Context activity, int textViewResourceId, ArrayList<Product> product) {
         super(activity, textViewResourceId, product);
         try {
             this.activity = activity;
@@ -89,14 +89,14 @@ public class ProductAdapter extends ArrayAdapter<Product> {
         final ViewHolder holder;
         try {
             if(convertView == null) {
-                vi = inflater.inflate(R.layout.activity_search, parent, false);
+                vi = inflater.inflate(R.layout.activity_product_view, parent, false);
                 holder = new ViewHolder();
                 holder.product_name = (TextView) vi.findViewById(R.id.product_name);
                 holder.product_dept = (TextView) vi.findViewById(R.id.product_dept);
                 holder.product_desc = (TextView) vi.findViewById(R.id.product_desc);
                 holder.product_price = (TextView) vi.findViewById(R.id.product_price);
                 holder.product_qty = (TextView) vi.findViewById(R.id.product_qty);
-                //holder.product_img = (ImageView) vi.findViewById(R.id.icon);
+                holder.product_img = (ImageView) vi.findViewById(R.id.icon);
                 vi.setTag(holder);
             }
             else {
@@ -110,6 +110,16 @@ public class ProductAdapter extends ArrayAdapter<Product> {
             holder.product_dept.setText(dept + products.get(position).getProduct_dept());
             holder.product_price.setText(money + String.valueOf(products.get(position).getPrice()));
             holder.product_qty.setText(qty + String.valueOf(products.get(position).getProduct_qty()));
+            Picasso.with(getContext()).load(URI).error(R.mipmap.ic_launcher).into(holder.product_img);
+            /*
+            try {
+                InputStream is = new URL(URI).openStream();
+                Bitmap myBit = BitmapFactory.decodeStream(is);
+                holder.product_img.setImageBitmap(getResizedBitmap(myBit, 250, 250));
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+            /*
             try {
                 pos = position;
                 setPos(pos);
@@ -120,6 +130,7 @@ public class ProductAdapter extends ArrayAdapter<Product> {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            */
             //URLConnection con = new URL(URI).openConnection();
             //con.connect();
             //holder.product_img.setImageURI(uri);
@@ -133,7 +144,7 @@ public class ProductAdapter extends ArrayAdapter<Product> {
 
         return vi;
     }
-
+    /*
     private class getImageView extends AsyncTask<Void, Void, Void> {
         String tempURI = getURI();
         int tempPos = getPos();
@@ -152,7 +163,28 @@ public class ProductAdapter extends ArrayAdapter<Product> {
 
         protected void onPostExecute(Void result) {
             tempHolder.product_img.setImageBitmap(bit);
-            //listview.setAdapter(adaptProduct);
+        }
+
+    }
+
+    private class getBitmapView extends AsyncTask<Void, Void, Bitmap> {
+        String tempURI = getURI();
+        int tempPos = getPos();
+        View vi = getCurrentView();
+        ViewHolder tempHolder = getCurrentHolder();
+
+        protected void onPreExecute() {
+            tempHolder.product_img = (ImageView) vi.findViewById(R.id.icon);
+            vi.setTag(tempHolder);
+        }
+
+        protected Bitmap doInBackground(Void... arg0)  {
+            bit = getBitmap(tempURI);
+            return null;
+        }
+
+        protected void onPostExecute(Void result) {
+            setBitmap(bit);
         }
 
     }
@@ -170,6 +202,10 @@ public class ProductAdapter extends ArrayAdapter<Product> {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public void setBitmap(Bitmap bit) {
+        this.bit = bit;
     }
 
     public void setPos(int pos) {
@@ -263,4 +299,19 @@ public class ProductAdapter extends ArrayAdapter<Product> {
         return -1;
     }
 
+    public Bitmap getResizedBitmap(Bitmap bm, int newHeight, int newWidth) {
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        // CREATE A MATRIX FOR THE MANIPULATION
+        Matrix matrix = new Matrix();
+        // RESIZE THE BIT MAP
+        matrix.postScale(scaleWidth, scaleHeight);
+
+        // "RECREATE" THE NEW BITMAP
+        Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
+        return resizedBitmap;
+    }
+    */
 }

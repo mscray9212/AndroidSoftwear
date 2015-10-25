@@ -3,10 +3,10 @@ package com.android.softwear;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,33 +15,27 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.softwear.models.Product;
 import com.android.softwear.process.ConnectDB;
 import com.android.softwear.process.ProductAdapter;
-import com.android.softwear.process.SearchQuery;
+import com.android.softwear.process.ProductsAdapter;
 import com.squareup.picasso.Picasso;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 
 /**
@@ -50,18 +44,15 @@ import java.util.ArrayList;
 public class Search extends Activity {
 
     // placeholder that you will be updating with the database data
-    static ArrayList<Product> products = new ArrayList<>();
-    ProductAdapter adaptProduct;
+    ArrayList<Product> products = MainActivity.getProducts();
+    ProductsAdapter adaptProducts;
     static String inputSearch;
     static int pos;
-    static View currentView;
-    static ProductAdapter.ViewHolder viewHolder;
     static AdapterView<?> par;
     String URI;
     private String user;
     private Integer SKU;
     private float price;
-    private TextView getData;
     static boolean updatedCart = false;
     Bitmap bit;
 
@@ -70,36 +61,26 @@ public class Search extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_search);
-        new returnAllProducts().execute();
-        ListView listview = (ListView) findViewById(R.id.list_view);
-        adaptProduct = new ProductAdapter(Search.this, 0, products);
+        if(products.isEmpty()) {
+            new returnAllProducts().execute();
+        }
+        final ListView listview = (ListView) findViewById(R.id.list_view);
+        adaptProducts = new ProductsAdapter(Search.this, 0, products);
         listview.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 
-                //setPos(position);
-                //setCurrentView(v);
-                //par = parent;
-                //setPar(parent);
-                final Context c;
-                //setContentView(R.layout.activity_product_view);
-                //new returnProductView().execute();
-
-                //Intent mainIntent = new Intent(Search.this, R.layout.activity_product_view, ProductAdapter.class);
-                //startActivity(mainIntent);
-                View vi = null;
-                LayoutInflater inflater = null;
-
                 try {
+
                     setContentView(R.layout.activity_product_view);
                     //vi = inflater.inflate(R.layout.activity_product_view, parent, false);
-                    ProductAdapter.ViewHolder holder = new ProductAdapter.ViewHolder();
+                    ProductsAdapter.ViewHolder holder = new ProductsAdapter.ViewHolder();
                     holder.product_name = (TextView) findViewById(R.id.product_name);
                     holder.product_dept = (TextView) findViewById(R.id.product_dept);
                     holder.product_desc = (TextView) findViewById(R.id.product_desc);
                     holder.product_price = (TextView) findViewById(R.id.product_price);
                     holder.product_qty = (TextView) findViewById(R.id.product_qty);
-                    //vi.setTag(holder);
+                    holder.product_img = (ImageView) findViewById(R.id.icon);
 
                     URI = "http://www.michaelscray.com/Softwear/graphics/";
                     String dept = "Dept: ";
@@ -113,19 +94,7 @@ public class Search extends Activity {
                     holder.product_dept.setText(dept + products.get(position).getProduct_dept());
                     holder.product_price.setText(money + String.valueOf(products.get(position).getPrice()));
                     holder.product_qty.setText(qty + String.valueOf(products.get(position).getProduct_qty()));
-                    //holder.product_img.setImageBitmap(getBitmap(URI));
-                    //Picasso.with(getApplication()).load(URI + products.get(position).getProduct_img()).into(holder.product_img);
-
-                    try {
-                        pos = position;
-                        setPos(pos);
-                        setURI(URI);
-                        setCurrentView(v);
-                        setCurrentHolder(holder);
-                        new getImageView().execute();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    Picasso.with(getApplicationContext()).load(URI).error(R.mipmap.ic_launcher).into(holder.product_img);
 
                     Button addToCart = (Button) findViewById(R.id.cart_btn);
                     addToCart.setOnClickListener(new View.OnClickListener() {
@@ -153,7 +122,8 @@ public class Search extends Activity {
 
             }
         });
-        listview.setAdapter(adaptProduct);
+        adaptProducts.notifyDataSetChanged();
+        listview.setAdapter(adaptProducts);
         Intent intent = getIntent();
         if(Intent.ACTION_SEARCH.equals(intent.getAction())) {
             inputSearch = intent.getStringExtra(SearchManager.QUERY);
@@ -189,7 +159,7 @@ public class Search extends Activity {
 
     private class returnProductView extends AsyncTask<Void, View, Void> {
 
-        ProductAdapter.ViewHolder holder;
+        ProductsAdapter.ViewHolder holder;
         View vi = null;
         LayoutInflater inflater = null;
 
@@ -197,7 +167,7 @@ public class Search extends Activity {
             try {
                 if (vi == null) {
                     vi = inflater.inflate(R.layout.activity_product_view, getPar(), false);
-                    ProductAdapter.ViewHolder holder = new ProductAdapter.ViewHolder();
+                    ProductsAdapter.ViewHolder holder = new ProductsAdapter.ViewHolder();
                     holder.product_name = (TextView) vi.findViewById(R.id.product_name);
                     holder.product_dept = (TextView) vi.findViewById(R.id.product_dept);
                     holder.product_desc = (TextView) vi.findViewById(R.id.product_desc);
@@ -206,7 +176,7 @@ public class Search extends Activity {
                     vi.setTag(holder);
 
                 } else {
-                    holder = (ProductAdapter.ViewHolder) vi.getTag();
+                    holder = (ProductsAdapter.ViewHolder) vi.getTag();
                 }
                 String URI = "http://www.michaelscray.com/Softwear/graphics/";
                 String dept = "Dept: ";
@@ -226,8 +196,8 @@ public class Search extends Activity {
 
         protected Void doInBackground(Void... arg0)  {
 
-            //new ProductAdapter.getImageView().execute();
-            //adaptProduct = new ProductAdapter(Search.this, position, products);
+            //new ProductsAdapter.getImageView().execute();
+            //adaptProduct = new ProductsAdapter(Search.this, position, products);
             //v.getContext().getResources();
             //v.(adaptProduct);
             return null;
@@ -294,7 +264,7 @@ public class Search extends Activity {
         }
 
         protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
+            //super.onPostExecute(result);
             //getData.setText(queryResult);
             //return products;
 
@@ -311,17 +281,18 @@ public class Search extends Activity {
 
         protected void onPreExecute() {
             //bench warmer
-            if(tempUser == null) {
+            if(tempUser == null || tempUser.equals("Guest")) {
                 pDialog = new ProgressDialog(Search.this);
                 pDialog.setTitle("Login First");
-                pDialog.setMessage("Please, sign in to use your cart");
+                pDialog.setMessage("Please, sign in to use cart services");
+                pDialog.setCancelable(true);
                 pDialog.show();
             }
         }
 
         protected Void doInBackground(Void... arg0)  {
 
-            if(tempUser != null) {
+            if(tempUser != null && !(tempUser.equals("Guest"))) {
                 try {
                     Connection conn = ConnectDB.getConnection();
                     String queryString = "INSERT INTO Orders (User_Name, SKU, Price, Shipped) VALUES (?, ?, ?, ?)";
@@ -348,6 +319,12 @@ public class Search extends Activity {
         }
 
         protected void onPostExecute(Void result) {
+            if(tempUser != null && !(tempUser.equals("Guest"))) {
+                Toast.makeText(Search.this, "Added item: " + tempSKU + " to your cart!", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                Toast.makeText(Search.this, "You forgot to login, didn't you?", Toast.LENGTH_SHORT).show();
+            }
             //bench cooler
             //getData.setText(queryResult);
             //super.onPostExecute(result);
@@ -355,82 +332,8 @@ public class Search extends Activity {
 
     }
 
-    public class getImageView extends AsyncTask<Void, Void, Void> {
-        String tempURI = getURI();
-        int tempPos = getPos();
-        View vi = getCurrentView();
-        ProductAdapter.ViewHolder tempHolder = getCurrentHolder();
-
-        protected void onPreExecute() {
-            tempHolder.product_img = (ImageView) vi.findViewById(R.id.icon);
-            vi.setTag(tempHolder);
-        }
-
-        protected Void doInBackground(Void... arg0)  {
-            bit = getBitmap(tempURI);
-            return null;
-        }
-
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            tempHolder.product_img.setImageBitmap(bit);
-            //listview.setAdapter(adaptProduct);
-        }
-
-    }
-
-    public Bitmap getBitmap(String src) {
-        Bitmap bm = null;
-        try {
-            URL url = new URL(src);
-            URLConnection conn = url.openConnection();
-            conn.connect();
-            InputStream input = conn.getInputStream();
-            BufferedInputStream bis = new BufferedInputStream(input);
-            bm = BitmapFactory.decodeStream(bis);
-            bis.close();
-            input.close();
-        } catch(Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-        return bm;
-    }
-
-    public void setURI(String URI) {
-        this.URI = URI;
-    }
-
-    public String getURI() {
-        return URI;
-    }
-
-    public void setPos(int position) {
-        this.pos = position;
-    }
-
     public int getPos() {
         return pos;
-    }
-
-    public void setCurrentView(View currentView) {
-        this.currentView = currentView;
-    }
-
-    public View getCurrentView() {
-        return currentView;
-    }
-
-    public void setCurrentHolder(ProductAdapter.ViewHolder viewHolder) {
-        this.viewHolder = viewHolder;
-    }
-
-    public ProductAdapter.ViewHolder getCurrentHolder() {
-        return viewHolder;
-    }
-
-    public void setPar(AdapterView par) {
-        this.par = par;
     }
 
     public AdapterView getPar() {

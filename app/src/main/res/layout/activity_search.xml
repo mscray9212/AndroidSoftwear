@@ -12,8 +12,8 @@
     <!-- Image -->
     <ImageView
         android:id="@+id/icon"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_alignParentTop="true"
         android:contentDescription="TODO"
         android:src="@drawable/missing"
@@ -22,8 +22,7 @@
     <!-- Product name -->
     <TextView
         android:layout_width="fill_parent"
-        android:layout_height="15dip"
-        android:layout_alignParentBottom="false"
+        android:layout_height="20dip"
         android:layout_alignParentTop="true"
         android:id="@+id/product_name"
         android:ellipsize="marquee"
@@ -31,30 +30,28 @@
         android:text="Product"
         android:textSize="14sp"
         android:paddingLeft="5dp"
-        android:layout_toEndOf="@+id/icon"
-        android:layout_alignParentRight="true"
         android:layout_alignWithParentIfMissing="true"
         android:textStyle="bold"
         android:paddingBottom="-8dp"
-        android:height="20dp" />
+        android:height="20dp"
+        android:layout_toEndOf="@+id/icon" />
 
     <!-- Product description -->
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/product_desc"
-        android:layout_alignParentRight="true"
         android:layout_alignWithParentIfMissing="true"
         android:gravity="center_vertical"
         android:text="Description"
-        android:textSize="10sp"
+        android:textSize="12sp"
         android:paddingLeft="5dp"
-        android:layout_above="@+id/product_name"
-        android:layout_toEndOf="@+id/icon"
-        android:layout_alignParentBottom="true"
         android:paddingTop="5dp"
         android:paddingBottom="-8dp"
-        android:layout_below="@+id/product_dept" />
+        android:layout_below="@+id/product_dept"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/icon"
+        android:layout_above="@+id/update_btn" />
 
     <!-- Product price -->
     <TextView
@@ -65,10 +62,10 @@
         android:text="Price"
         android:textSize="14sp"
         android:paddingRight="8dp"
-        android:gravity="right"
         android:height="20dp"
         android:layout_below="@+id/product_name"
-        android:layout_toEndOf="@+id/icon" />
+        android:gravity="right"
+        android:layout_alignParentEnd="true" />
 
     <TextView
         android:layout_width="fill_parent"
@@ -81,8 +78,9 @@
         android:paddingLeft="5dp"
         android:layout_alignWithParentIfMissing="true"
         android:paddingBottom="-5dp"
-        android:layout_above="@+id/product_qty"
-        android:layout_toEndOf="@+id/icon" />
+        android:layout_alignBottom="@+id/product_qty"
+        android:layout_toEndOf="@+id/icon"
+        android:layout_below="@+id/product_name" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -92,8 +90,9 @@
         android:id="@+id/product_qty"
         android:textSize="14sp"
         android:paddingRight="8dp"
-        android:layout_centerVertical="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_marginEnd="69dp"
+        android:layout_below="@+id/product_name"
+        android:layout_alignEnd="@+id/product_desc" />
     <!--
     <Button
         style="?android:attr/buttonStyleSmall"
