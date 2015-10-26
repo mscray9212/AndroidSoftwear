@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
         }
         /*
         if (id == R.id.action_search) {
-            setContentView(R.layout.activity_test);
+            setContentView(R.layout.activity_search;
             getData = (TextView) findViewById(R.id.textView_test);
             //Button search_btn = (Button) findViewById(R.id.search_btn);
             new returnProducts().execute();
