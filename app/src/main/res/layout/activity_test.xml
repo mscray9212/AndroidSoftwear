@@ -62,7 +62,6 @@
 
                         <RatingBar
                             android:id="@+id/rbView_product_rating"
-                            style="@style/RatingBarLarge32"
                             android:layout_width="105dp"
                             android:layout_height="24dp"
                             android:layout_marginRight="10dp"
@@ -319,7 +318,7 @@
                 android:background="#ffffff"
                 android:lineSpacingExtra="5dp"
                 android:paddingLeft="10dp"
-                android:text="@string/placeholder_info_text"
+                android:text="Something goes here"
                 android:textColor="#a3a3a3"
                 android:textSize="14sp" />
         </ScrollView>
