@@ -10,6 +10,10 @@
     <item android:id="@+id/action_cart" android:title="@string/action_cart"
         android:actionProviderClass="android.widget.ShareActionProvider"
         android:orderInCategory="100" android:icon="@drawable/cart0" app:showAsAction="always" />
+    <item android:id="@+id/action_account" android:title="@string/action_account"
+        android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/action_about_us" android:title="@string/action_about_us"
+        android:orderInCategory="100" app:showAsAction="never" />
     <item android:id="@+id/action_logout" android:title="@string/action_logout"
         android:orderInCategory="100" app:showAsAction="never" />
 </menu>

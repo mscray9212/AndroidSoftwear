@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        new retrievAllProducts().execute();
+        new retrieveAllProducts().execute();
         setContentView(R.layout.activity_main);
         //final ActionBar actionBar = getActionBar();
         //actionBar.setDisplayShowTitleEnabled(false);
@@ -125,6 +125,14 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_search) {
             new getCartIcon().execute();
             startActivity(new Intent(getApplicationContext(), Search.class));
+        }
+
+        if (id == R.id.action_account) {
+            startActivity(new Intent(getApplicationContext(), AccountActivity.class));
+        }
+
+        if (id == R.id.action_about_us) {
+            setContentView(R.layout.activity_about_us);
         }
         /*
         if (id == R.id.action_search) {
@@ -502,7 +510,7 @@ public class MainActivity extends AppCompatActivity {
         return currentAccount;
     }
 
-    private class retrievAllProducts extends AsyncTask<Void, Void, Void> {
+    private class retrieveAllProducts extends AsyncTask<Void, Void, Void> {
 
         String queryResult = "";
         Product product = null;

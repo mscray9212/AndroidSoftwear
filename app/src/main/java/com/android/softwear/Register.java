@@ -20,8 +20,6 @@ public class Register extends Activity {
 
     public static Account register(Account acct, Connection conn) {
 
-        int status = 0;
-
         try {
 
             PreparedStatement ps = conn.prepareStatement("INSERT INTO `Customers`(`First_Name`, `Last_Name`, `Email`, `Password`, `User_Name`, `Admin`) VALUES (?,?,?,?,?,?)");
@@ -39,7 +37,7 @@ public class Register extends Activity {
                     "`Password`='"+acct.getPassword()+"', " +
                     "`User_Name`='"+acct.getUsername()+"', " +
                     "`Admin`='"+0+"')"); */
-            status = ps.executeUpdate();
+            ps.executeUpdate();
         }
 
         catch(Exception e){
