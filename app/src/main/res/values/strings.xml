@@ -25,6 +25,7 @@
     <string name="action_account">Account</string>
     <string name="action_about_us">About us</string>
     <string name="action_search">Search</string>
+    <string name="action_category">Category</string>
     <string name="hint">Search products..</string>
     <string name="try_me">Add to Cart</string>
 

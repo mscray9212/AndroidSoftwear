@@ -1,8 +1,10 @@
 package com.android.softwear;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,15 +12,21 @@ import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,8 +53,9 @@ public class Search extends Activity {
 
     // placeholder that you will be updating with the database data
     ArrayList<Product> products = MainActivity.getProducts();
+    public SearchView mSearchView;
+    Menu mainMenu;
     ProductsAdapter adaptProducts;
-    static String inputSearch;
     static int pos;
     static AdapterView<?> par;
     String URI;
@@ -54,6 +63,7 @@ public class Search extends Activity {
     private Integer SKU;
     private float price;
     static boolean updatedCart = false;
+    Menu menu;
     Bitmap bit;
 
 
@@ -124,6 +134,31 @@ public class Search extends Activity {
         });
         adaptProducts.notifyDataSetChanged();
         listview.setAdapter(adaptProducts);
+        /*
+        EditText inputSearch = (EditText) findViewById(R.id.inputSearch);
+        inputSearch.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
+                // When user changed the Text
+                Search.this.adaptProducts.getFilter().filter(cs);
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
+                                          int arg3) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable arg0) {
+                // TODO Auto-generated method stub
+            }
+
+        });
+        handleIntent(getIntent());
+        /*
         Intent intent = getIntent();
         if(Intent.ACTION_SEARCH.equals(intent.getAction())) {
             inputSearch = intent.getStringExtra(SearchManager.QUERY);
@@ -134,28 +169,99 @@ public class Search extends Activity {
                 e.printStackTrace();
             }
         }
-
+        */
     }
+
+    /*
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+
+        MenuItem searchViewMenuItem = menu.findItem(R.id.action_search);
+        SearchView mSearchView = (SearchView) searchViewMenuItem.getActionView();
+        int searchImgId = getResources().getIdentifier("android:id/search_button", null, null);
+        ImageView v = (ImageView) mSearchView.findViewById(searchImgId);
+        v.setImageResource(R.drawable.search);
+
+        return super.onPrepareOptionsMenu(menu);
+    }
+    */
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the options menu from XML
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_main, menu);
-        //getMenuInflater().inflate(R.menu.search_menu, menu);
-
         /*
-        // Get the SearchView and set the searchable configuration
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        // Assumes current activity is the searchable activity
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setIconifiedByDefault(false); //Do not iconify the widget; expand by default
+        new MenuInflater(getApplication()).inflate(R.menu.search_menu, menu);
+        getMenuInflater().inflate(R.menu.search_menu, menu);
+        this.menu = menu;
         */
+        getMenuInflater().inflate(R.menu.search_menu, menu);
+        MenuItem menuItem = menu.findItem(R.id.action_search);
+
+        // When using the support library, the setOnActionExpandListener() method is
+        // static and accepts the MenuItem object as an argument
+        MenuItemCompat.setOnActionExpandListener(menuItem, new MenuItemCompat.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                // Do something when collapsed
+                return true;  // Return true to collapse action view
+            }
+
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                // Do something when expanded
+                return true;  // Return true to expand action view
+            }
+        });
         return true;
     }
 
+    /*
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the options menu from XML
+        getMenuInflater().inflate(R.menu.search_menu, menu);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
+        MenuItemCompat.setOnActionExpandListener(searchItem,new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                return true;
+            }
+        });
+        return true;
+    }
+
+    /*
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        if (id == R.id.action_search) {
+            startActivity(new Intent(getApplicationContext(), Search.class));
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+        if(Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+        }
+    }
+    */
 
     private class returnProductView extends AsyncTask<Void, View, Void> {
 

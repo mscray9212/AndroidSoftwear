@@ -1,11 +1,28 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:yourapp="http://schemas.android.com/apk/res-auto">
+    xmlns:yourapp="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".Search">
+
+    <!--
+    <item
+        android:id="@+id/mnSearch"
+        android:actionProviderClass="android.widget.ShareActionProvider"
+        android:icon="@drawable/search"
+        android:title="Search"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="always"/>
+    -->
+    <item
+        android:title="@string/action_category"
+        android:id="@+id/action_category"
+        android:visible="true"
+        yourapp:showAsAction="ifRoom|collapseActionView"
+        yourapp:actionViewClass="android.widget.Spinner"/>
 
     <item
         android:title="@string/action_search"
         android:id="@+id/action_search"
-        android:icon="@drawable/search"
+        android:visible="true"
         yourapp:showAsAction="ifRoom|collapseActionView"
-        yourapp:actionViewClass="android.support.v7.widget.SearchView"/>
+        yourapp:actionViewClass="android.widget.SearchView"/>
 
 </menu>

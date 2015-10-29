@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView getData;
     ListAdapter adapter;
     private String user;
+    static int cartNum;
     boolean addedCart = false;
     Menu menu;
     //int cartItems =
@@ -457,10 +458,10 @@ public class MainActivity extends AppCompatActivity {
 
     public class getCartIcon extends AsyncTask<Void, Void, Void> {
         String tempUser = currentAccount.getUsername();
-        int cartNum = 0;
 
         @Override
         protected Void doInBackground(Void... arg0) {
+            cartNum = 0;
             if(tempUser != null) {
                 try {
                     Connection conn = ConnectDB.getConnection();
