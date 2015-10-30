@@ -188,30 +188,36 @@ public class Search extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        /*
-        new MenuInflater(getApplication()).inflate(R.menu.search_menu, menu);
-        getMenuInflater().inflate(R.menu.search_menu, menu);
-        this.menu = menu;
-        */
-        getMenuInflater().inflate(R.menu.search_menu, menu);
-        MenuItem menuItem = menu.findItem(R.id.action_search);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.search_menu, menu);
 
-        // When using the support library, the setOnActionExpandListener() method is
-        // static and accepts the MenuItem object as an argument
-        MenuItemCompat.setOnActionExpandListener(menuItem, new MenuItemCompat.OnActionExpandListener() {
-            @Override
-            public boolean onMenuItemActionCollapse(MenuItem item) {
-                // Do something when collapsed
-                return true;  // Return true to collapse action view
-            }
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search)
+                .getActionView();
+        searchView.setSearchableInfo(searchManager
+                .getSearchableInfo(getComponentName()));
 
-            @Override
-            public boolean onMenuItemActionExpand(MenuItem item) {
-                // Do something when expanded
-                return true;  // Return true to expand action view
-            }
-        });
-        return true;
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    /**
+     * On selecting action bar icons
+     * */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Take appropriate action for each action item click
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                // search action
+                return true;
+            case R.id.action_category:
+                // location found
+                ///LocationFound();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     /*
