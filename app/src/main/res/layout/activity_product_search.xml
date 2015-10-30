@@ -8,13 +8,13 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <!-- EditText for Search -->
+    <!-- EditText for Search
     <EditText android:id="@+id/inputSearch"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:hint="Search products.."
         android:inputType="textVisiblePassword"/>
-
+    -->
 
     <ListView
         android:layout_width="match_parent"

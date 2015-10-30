@@ -1,6 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:yourapp="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools" tools:context=".Search">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:theme="@android:style/Theme.NoTitleBar">
 
     <!--
     <item
@@ -11,18 +11,34 @@
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="always"/>
     -->
+
     <item
         android:title="@string/action_category"
         android:id="@+id/action_category"
         android:visible="true"
-        yourapp:showAsAction="ifRoom|collapseActionView"
-        yourapp:actionViewClass="android.widget.Spinner"/>
+        app:showAsAction="always"
+        app:actionViewClass="android.widget.Spinner">
+            <menu>
+                <item
+                    android:id="@+id/category_men"
+                    android:enabled="true"
+                    android:title="Men's" />
+                <item
+                    android:id="@+id/category_women"
+                    android:title="Women's" />
+                <item
+                    android:id="@+id/category_child"
+                    android:title="Children's" />
+                <item
+                    android:id="@+id/category_access"
+                    android:title="Accessories" />
+            </menu>
+        </item>
 
     <item
         android:title="@string/action_search"
         android:id="@+id/action_search"
-        android:visible="true"
-        yourapp:showAsAction="ifRoom|collapseActionView"
-        yourapp:actionViewClass="android.widget.SearchView"/>
+        app:showAsAction="collapseActionView|ifRoom"
+        app:actionViewClass="android.support.v7.widget.SearchView"/>
 
 </menu>
