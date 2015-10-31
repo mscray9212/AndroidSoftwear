@@ -198,7 +198,7 @@ public class Search extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String s) {
                 Log.d(TAG, "onQueryTextChange: " + s);
-                //doStuff(s);
+                doStuff(s);
                 return false;
             }
         });
