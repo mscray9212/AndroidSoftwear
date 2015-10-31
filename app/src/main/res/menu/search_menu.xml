@@ -17,6 +17,7 @@
         android:id="@+id/action_category"
         android:visible="true"
         app:showAsAction="always"
+        android:entries="@array/category_options"
         app:actionViewClass="android.widget.Spinner">
             <menu>
                 <item

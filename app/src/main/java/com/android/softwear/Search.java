@@ -59,6 +59,7 @@ public class Search extends AppCompatActivity {
     ArrayList<Product> products = MainActivity.getProducts();
     Menu mainMenu;
     ProductsAdapter adaptProducts;
+    ListView listview;
     static int pos;
     static AdapterView<?> par;
     String URI;
@@ -87,7 +88,7 @@ public class Search extends AppCompatActivity {
         if(products.isEmpty()) {
             new returnAllProducts().execute();
         }
-        final ListView listview = (ListView) findViewById(R.id.list_view);
+        listview = (ListView) findViewById(R.id.list_view);
         adaptProducts = new ProductsAdapter(Search.this, 0, products);
         listview.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
@@ -148,7 +149,6 @@ public class Search extends AppCompatActivity {
         adaptProducts.notifyDataSetChanged();
 
         listview.setAdapter(adaptProducts);
-        handleIntent(getIntent());
     }
 
     /*
@@ -183,113 +183,115 @@ public class Search extends AppCompatActivity {
                 R.array.category_options, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
-        spinner.setAdapter(adapter);
-        Log.d(TAG, searchView.toString());
-        /*
+        //spinner.setAdapter(adapter);
+        Log.d(TAG, "searchView: " + searchView.toString());
+
         searchView.setOnQueryTextListener(new android.support.v7.widget.SearchView.OnQueryTextListener() {
 
             @Override
             public boolean onQueryTextSubmit(String s) {
-                Log.d(TAG, "onQueryTextSubmit ");
+                doStuff(s);
+                Log.d(TAG, "onQueryTextSubmit: " + s);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
-                Log.d(TAG, "onQueryTextChange ");
+                Log.d(TAG, "onQueryTextChange: " + s);
+                //doStuff(s);
                 return false;
             }
         });
-        */
-
         return super.onCreateOptionsMenu(menu);
     }
 
-    /**
-     * On selecting action bar icons
-     *
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Take appropriate action for each action item click
-        switch (item.getItemId()) {
-            case R.id.action_search:
-                // search action
-                return true;
-            /*
-            case R.id.action_category:
-                // location found
-                ///LocationFound();
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-    */
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        handleIntent(intent);
-    }
-
-    private void handleIntent(Intent intent) {
-
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            Log.d(TAG, query);
-
-            //use the query to search your data somehow
-        }
-    }
-
-    /*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the options menu from XML
-        getMenuInflater().inflate(R.menu.search_menu, menu);
-        MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-
-        MenuItemCompat.setOnActionExpandListener(searchItem,new MenuItem.OnActionExpandListener() {
-            @Override
-            public boolean onMenuItemActionCollapse(MenuItem item) {
-                return true;
+    public void doStuff(String result) {
+        ArrayList<Product> currProducts = MainActivity.getProducts();
+        ArrayList<Product> searchProducts = new ArrayList<>();
+        listview = (ListView) findViewById(R.id.list_view);
+        Product tempProduct;
+        if(result != null) {
+            for (int i = 0; i < currProducts.size(); i++) {
+                if (currProducts.get(i).getProduct_name().toLowerCase().contains(result.toLowerCase())) {
+                    Log.d(TAG, "Product list contains: " + result);
+                    tempProduct = new Product();
+                    tempProduct.setSKU(products.get(i).getSKU());
+                    tempProduct.setProduct_name(products.get(i).getProduct_name());
+                    tempProduct.setProduct_dept(products.get(i).getProduct_dept());
+                    tempProduct.setPrice(products.get(i).getPrice());
+                    tempProduct.setProduct_desc(products.get(i).getProduct_desc());
+                    tempProduct.setProduct_img(products.get(i).getProduct_img());
+                    tempProduct.setProduct_qty(products.get(i).getProduct_qty());
+                    try {
+                        searchProducts.add(tempProduct);
+                        Log.d(TAG, "tempProduct name" + products.get(i).getProduct_name());
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
-
+        }
+        adaptProducts = new ProductsAdapter(Search.this, 0, searchProducts);
+        listview.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
-            public boolean onMenuItemActionExpand(MenuItem item) {
-                return true;
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+
+                try {
+
+                    setContentView(R.layout.activity_product_view);
+                    //vi = inflater.inflate(R.layout.activity_product_view, parent, false);
+                    ProductsAdapter.ViewHolder holder = new ProductsAdapter.ViewHolder();
+                    holder.product_name = (TextView) findViewById(R.id.product_name);
+                    holder.product_dept = (TextView) findViewById(R.id.product_dept);
+                    holder.product_desc = (TextView) findViewById(R.id.product_desc);
+                    holder.product_price = (TextView) findViewById(R.id.product_price);
+                    holder.product_qty = (TextView) findViewById(R.id.product_qty);
+                    holder.product_img = (ImageView) findViewById(R.id.icon);
+
+                    URI = "http://www.michaelscray.com/Softwear/graphics/";
+                    String dept = "Dept: ";
+                    String money = "$";
+                    String qty = "Qty: ";
+                    URI += products.get(position).getProduct_img();
+                    Uri uris = Uri.parse(URI + products.get(position).getProduct_img());
+                    URI uri = java.net.URI.create(URI);
+                    holder.product_name.setText(products.get(position).getProduct_name());
+                    holder.product_desc.setText(products.get(position).getProduct_desc());
+                    holder.product_dept.setText(dept + products.get(position).getProduct_dept());
+                    holder.product_price.setText(money + String.valueOf(products.get(position).getPrice()));
+                    holder.product_qty.setText(qty + String.valueOf(products.get(position).getProduct_qty()));
+                    Picasso.with(getApplicationContext()).load(URI).error(R.mipmap.ic_launcher).into(holder.product_img);
+
+                    Button addToCart = (Button) findViewById(R.id.cart_btn);
+                    addToCart.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            /*  Get User_Name, SKU, Price, and Shipped   */
+                            user = MainActivity.currentAccount.getUsername();
+                            SKU = products.get(getPos()).getSKU();
+                            //String desc = products.get(getPos()).getProduct_desc();
+                            //String dept = products.get(getPos()).getProduct_dept();
+                            price = products.get(getPos()).getPrice();
+                            //int qty = products.get(getPos()).getProduct_qty();
+                            //String img = products.get(getPos()).getProduct_img();
+                            setUser(user);
+                            setSKU(SKU);
+                            setPrice(price);
+                            updatedCart = true;
+                            new addItemToCart().execute();
+                        }
+                    });
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
             }
         });
-        return true;
+        adaptProducts.notifyDataSetChanged();
+
+        listview.setAdapter(adaptProducts);
     }
-
-    /*
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        if (id == R.id.action_search) {
-            startActivity(new Intent(getApplicationContext(), Search.class));
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        handleIntent(intent);
-    }
-
-    private void handleIntent(Intent intent) {
-        if(Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-        }
-    }
-    */
 
     private class returnProductView extends AsyncTask<Void, View, Void> {
 
