@@ -10,7 +10,7 @@
         android:title="Search"
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="always"/>
-    -->
+
 
     <item
         android:title="@string/action_category"
@@ -35,6 +35,7 @@
                     android:title="Accessories" />
             </menu>
         </item>
+    -->
 
     <item
         android:title="@string/action_search"

@@ -68,6 +68,7 @@ public class Search extends AppCompatActivity {
     private float price;
     static boolean updatedCart = false;
     static final String TAG = "Search text:";
+    private ActionBar actionBar;
     Menu menu;
     Bitmap bit;
     /*
@@ -85,6 +86,9 @@ public class Search extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_search);
+        //actionBar = getActionBar();
+        // Hide the action bar title
+        //actionBar.setDisplayShowTitleEnabled(false);
         if(products.isEmpty()) {
             new returnAllProducts().execute();
         }
@@ -176,12 +180,11 @@ public class Search extends AppCompatActivity {
         android.support.v7.widget.SearchView searchView = (android.support.v7.widget.SearchView) menuItem.getActionView();
         //android.support.v7.widget.SearchView searchView = (android.support.v7.widget.SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        MenuItem menuCategory = menu.findItem(R.id.action_category);
-        Spinner spinner = (Spinner) findViewById(R.id.action_category);
+        //MenuItem menuCategory = menu.findItem(R.id.action_category);
+        //Spinner spinner = (Spinner) findViewById(R.id.action_category);
         // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.category_options, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.category_options, android.R.layout.simple_spinner_item);
+        //adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         //spinner.setAdapter(adapter);
         Log.d(TAG, "searchView: " + searchView.toString());
