@@ -1,34 +1,25 @@
 package com.android.softwear;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -36,15 +27,10 @@ import android.widget.Toast;
 
 import com.android.softwear.models.Product;
 import com.android.softwear.process.ConnectDB;
-import com.android.softwear.process.ProductAdapter;
 import com.android.softwear.process.ProductsAdapter;
 import com.squareup.picasso.Picasso;
 
-import java.io.BufferedInputStream;
-import java.io.InputStream;
 import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -114,6 +100,10 @@ public class Search extends AppCompatActivity {
                     String dept = "Dept: ";
                     String money = "$";
                     String qty = "Qty: ";
+
+                    //final Integer tempSKU = products.get(position).getSKU();
+                    //final float tempPrice = products.get(position).getPrice();
+
                     URI += products.get(position).getProduct_img();
                     Uri uris = Uri.parse(URI + products.get(position).getProduct_img());
                     URI uri = java.net.URI.create(URI);
@@ -125,15 +115,17 @@ public class Search extends AppCompatActivity {
                     Picasso.with(getApplicationContext()).load(URI).error(R.mipmap.ic_launcher).into(holder.product_img);
 
                     Button addToCart = (Button) findViewById(R.id.cart_btn);
+                    setSKU(products.get(position).getSKU());
+                    setPrice(products.get(position).getPrice());
                     addToCart.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             /*  Get User_Name, SKU, Price, and Shipped   */
                             user = MainActivity.currentAccount.getUsername();
-                            SKU = products.get(getPos()).getSKU();
+                            SKU = getSKU();
                             //String desc = products.get(getPos()).getProduct_desc();
                             //String dept = products.get(getPos()).getProduct_dept();
-                            price = products.get(getPos()).getPrice();
+                            price = getPrice();
                             //int qty = products.get(getPos()).getProduct_qty();
                             //String img = products.get(getPos()).getProduct_img();
                             setUser(user);
@@ -270,17 +262,22 @@ public class Search extends AppCompatActivity {
                     addToCart.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            View parentRow = (View) v.getParent();
+                            ListView listViewItem = (ListView) parentRow.getParent();
+                            final int position = listViewItem.getPositionForView(parentRow);
+                            //int position=(Integer)v.getTag();
                             /*  Get User_Name, SKU, Price, and Shipped   */
                             user = MainActivity.currentAccount.getUsername();
-                            SKU = products.get(getPos()).getSKU();
-                            //String desc = products.get(getPos()).getProduct_desc();
-                            //String dept = products.get(getPos()).getProduct_dept();
-                            price = products.get(getPos()).getPrice();
-                            //int qty = products.get(getPos()).getProduct_qty();
-                            //String img = products.get(getPos()).getProduct_img();
+                            SKU = products.get(position).getSKU();
+                            //String desc = products.get(position).getProduct_desc();
+                            //String dept = products.get(position).getProduct_dept();
+                            price = products.get(position).getPrice();
+                            //int qty = products.get(position).getProduct_qty();
+                            //String img = products.get(position).getProduct_img();
                             setUser(user);
                             setSKU(SKU);
                             setPrice(price);
+                            Log.d(TAG, user+ ", added item: " +String.valueOf(SKU)+ ", for $" +String.valueOf(price));
                             updatedCart = true;
                             new addItemToCart().execute();
                         }

@@ -243,10 +243,15 @@
         android:text="Description"
         android:id="@+id/textView" />
     -->
-
     <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/contents">
 
         <TextView
             android:layout_width="match_parent"
@@ -257,15 +262,23 @@
             android:layout_alignParentEnd="false"
             android:layout_alignParentStart="false" />
 
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_below="@id/contents">
+
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:id="@+id/list_cart_view">
+        </ListView>
+
     </RelativeLayout>
 
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:id="@+id/list_cart_view">
-    </ListView>
-
+    </RelativeLayout>
 
 </LinearLayout>
 

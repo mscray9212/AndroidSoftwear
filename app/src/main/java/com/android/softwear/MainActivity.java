@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     //ProductQuery products = new ProductQuery();
     static ArrayList<Product> products = new ArrayList<>();
-    static Account currentAccount = new Account();
+    public static Account currentAccount = new Account();
     static CartChangeListener cartChangeListener;
     static String searchString = "";
     private TextView getData;
