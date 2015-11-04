@@ -208,7 +208,8 @@ public class Search extends AppCompatActivity {
         if(result != null) {
             for (int i = 0; i < currProducts.size(); i++) {
                 if (currProducts.get(i).getProduct_name().toLowerCase().contains(result.toLowerCase()) ||
-                        currProducts.get(i).getProduct_desc().toLowerCase().contains(result.toLowerCase())) {
+                        currProducts.get(i).getProduct_desc().toLowerCase().contains(result.toLowerCase()) ||
+                        currProducts.get(i).getProduct_dept().toLowerCase().contains(result.toLowerCase())) {
                     Log.d(TAG, "Product list contains: " + result);
                     tempProduct = new Product();
                     tempProduct.setSKU(products.get(i).getSKU());

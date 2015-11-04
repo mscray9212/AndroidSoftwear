@@ -35,6 +35,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
@@ -46,8 +48,9 @@ public class ProductAdapter extends ArrayAdapter<Product> {
     private ArrayList<Product> products;
     ArrayList<Product> cartItems;
     Product product;
-    static Integer SKU;
+    static Integer size;
     private static LayoutInflater inflater = null;
+    static View vi;
     String money = "$";
     String dept = "Dept: ";
     String qty ="Qty: ";
@@ -60,6 +63,7 @@ public class ProductAdapter extends ArrayAdapter<Product> {
             this.activity = activity;
             this.products = product;
             setCartItems(products);
+            new getCartCount().execute();
             inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             //imageLoader = new ImageLoader(activity.getApplicationActivity());
         } catch (Exception e) {
@@ -91,46 +95,47 @@ public class ProductAdapter extends ArrayAdapter<Product> {
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
-        View vi = convertView;
+        vi = convertView;
         final ViewHolder holder;
-        try {
-            if(convertView == null) {
-                vi = inflater.inflate(R.layout.activity_cart_items, parent, false);
-                holder = new ViewHolder();
-                holder.product_name = (TextView) vi.findViewById(R.id.product_name);
-                holder.product_dept = (TextView) vi.findViewById(R.id.product_dept);
-                holder.product_desc = (TextView) vi.findViewById(R.id.product_desc);
-                holder.product_price = (TextView) vi.findViewById(R.id.product_price);
-                holder.product_qty = (TextView) vi.findViewById(R.id.product_qty);
-                holder.product_img = (ImageView) vi.findViewById(R.id.icon);
-                vi.setTag(holder);
-            }
-            else {
-                holder = (ViewHolder) vi.getTag();
-            }
-            Button remove = (Button) vi.findViewById(R.id.remove_btn);
-            URI = "http://www.michaelscray.com/Softwear/graphics/";
-            URI += products.get(position).getProduct_img();
-            Uri uri = Uri.parse(URI + products.get(position).getProduct_img());
-            holder.product_name.setText(products.get(position).getProduct_name());
-            holder.product_desc.setText(products.get(position).getProduct_desc());
-            holder.product_dept.setText(dept + products.get(position).getProduct_dept());
-            holder.product_price.setText(money + String.valueOf(products.get(position).getPrice()));
-            holder.product_qty.setText(qty + String.valueOf(products.get(position).getProduct_qty()));
-            Picasso.with(getContext()).load(URI).error(R.mipmap.ic_launcher).into(holder.product_img);
-            setProduct(getItem(position));
 
-            remove.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //do something
-                    new removeCartItem().execute(); //or some other task
-                    notifyDataSetChanged();
+        if(cartItems.size() == getCount()) {
+            try {
+                if (convertView == null) {
+                    vi = inflater.inflate(R.layout.activity_cart_items, parent, false);
+                    holder = new ViewHolder();
+                    holder.product_name = (TextView) vi.findViewById(R.id.product_name);
+                    holder.product_dept = (TextView) vi.findViewById(R.id.product_dept);
+                    holder.product_desc = (TextView) vi.findViewById(R.id.product_desc);
+                    holder.product_price = (TextView) vi.findViewById(R.id.product_price);
+                    holder.product_qty = (TextView) vi.findViewById(R.id.product_qty);
+                    holder.product_img = (ImageView) vi.findViewById(R.id.icon);
+                    vi.setTag(holder);
+                } else {
+                    holder = (ViewHolder) vi.getTag();
                 }
-            });
-        }
-        catch(Exception e) {
-            e.printStackTrace();
+                Button remove = (Button) vi.findViewById(R.id.remove_btn);
+                URI = "http://www.michaelscray.com/Softwear/graphics/";
+                URI += products.get(position).getProduct_img();
+                Uri uri = Uri.parse(URI + products.get(position).getProduct_img());
+                holder.product_name.setText(products.get(position).getProduct_name());
+                holder.product_desc.setText(products.get(position).getProduct_desc());
+                holder.product_dept.setText(dept + products.get(position).getProduct_dept());
+                holder.product_price.setText(money + String.valueOf(products.get(position).getPrice()));
+                holder.product_qty.setText(qty + String.valueOf(products.get(position).getProduct_qty()));
+                Picasso.with(getContext()).load(URI).error(R.mipmap.ic_launcher).into(holder.product_img);
+                setProduct(getItem(position));
+
+                remove.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //do something
+                        new removeCartItem().execute(); //or some other task
+                        notifyDataSetChanged();
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         return vi;
@@ -161,16 +166,52 @@ public class ProductAdapter extends ArrayAdapter<Product> {
                     e.printStackTrace();
                     queryResult = "Database connection failure!\n" + e.toString();
                 }
-                //result = ProductQuery.returnProducts(result);
+                cartItems.remove(updateCart);
             }
             return null;
         }
 
         protected void onPostExecute(Void result) {
             Toast.makeText(getContext(), "Removed item: " + tempSKU + " from your cart!", Toast.LENGTH_SHORT).show();
-            cartItems.remove(updateCart);
         }
 
+    }
+
+    public class getCartCount extends AsyncTask<Void, Void, Void> {
+        String tempUser = MainActivity.currentAccount.getUsername();
+        int cartNum = 0;
+
+        @Override
+        protected void onPreExecute() {
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            if(tempUser != null) {
+                try {
+                    Connection conn = ConnectDB.getConnection();
+                    String queryString = "SELECT * FROM Orders WHERE `User_Name` = '" + tempUser + "'";
+
+                    PreparedStatement st = conn.prepareStatement(queryString);
+                    //st.setString(1, tempUser);
+
+                    final ResultSet result = st.executeQuery(queryString);
+
+                    while (result.next()) {
+                        cartNum++;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            setCartSize(cartNum);
+            return null;
+        }
+
+        protected void onPostExecute(Void result) {
+
+        }
     }
 
     private void setProduct(Product product) {
@@ -187,6 +228,14 @@ public class ProductAdapter extends ArrayAdapter<Product> {
 
     private ArrayList<Product> getCartItems() {
         return cartItems;
+    }
+
+    private void setCartSize(Integer size) {
+        this.size = size;
+    }
+
+    private Integer getCartSize() {
+        return size;
     }
 
 }

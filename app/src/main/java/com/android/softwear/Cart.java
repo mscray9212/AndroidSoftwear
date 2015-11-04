@@ -71,64 +71,12 @@ public class Cart extends AppCompatActivity {
         if(user != null && !(user.equals("Guest"))) {
             new getCartIcon().execute();
             new returnCartItems().execute();
-            ArrayList<Product> tempItems = new ArrayList<>();
-            tempItems = getCartItems();
+            ArrayList<Product> tempItems = getCartItems();
             Log.d(TAG, "cartItems size: " + String.valueOf(tempItems.size()));
             listView = (ListView) findViewById(R.id.list_cart_view);
             adaptCart = new ProductAdapter(Cart.this, 0, tempItems);
-
-            /*
-            //if (!(cartItems.isEmpty())) {
-                adaptCart = new ProductAdapter(Cart.this, 0, cartItems);
-
-                        for(int i=0; i<cartItems.size(); i++) {
-                            ProductsAdapter.ViewHolder holder = new ProductsAdapter.ViewHolder();
-                            holder.product_name = (TextView) findViewById(R.id.product_name);
-                            holder.product_dept = (TextView) findViewById(R.id.product_dept);
-                            holder.product_desc = (TextView) findViewById(R.id.product_desc);
-                            holder.product_price = (TextView) findViewById(R.id.product_price);
-                            holder.product_qty = (TextView) findViewById(R.id.product_qty);
-                            holder.product_img = (ImageView) findViewById(R.id.icon);
-
-                            URI = "http://www.michaelscray.com/Softwear/graphics/";
-                            String dept = "Dept: ";
-                            String money = "$";
-                            String qty = "Qty: ";
-                            URI += cartItems.get(i).getProduct_img();
-                            Uri uris = Uri.parse(URI + cartItems.get(i).getProduct_img());
-                            URI uri = java.net.URI.create(URI);
-                            holder.product_name.setText(cartItems.get(i).getProduct_name());
-                            holder.product_desc.setText(cartItems.get(i).getProduct_desc());
-                            holder.product_dept.setText(dept + cartItems.get(i).getProduct_dept());
-                            holder.product_price.setText(money + String.valueOf(cartItems.get(i).getPrice()));
-                            holder.product_qty.setText(qty + String.valueOf(cartItems.get(i).getProduct_qty()));
-                            Picasso.with(getApplicationContext()).load(URI).error(R.mipmap.ic_launcher).into(holder.product_img);
-
-                            Button removeItem = (Button) findViewById(R.id.remove_btn);
-                            removeItem.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                            /*  Get User_Name, SKU, Price, and Shipped   */
-                                    /*
-                                    user = MainActivity.currentAccount.getUsername();
-                                    SKU = products.get(getPos()).getSKU();
-                                    //String desc = products.get(getPos()).getProduct_desc();
-                                    //String dept = products.get(getPos()).getProduct_dept();
-                                    price = products.get(getPos()).getPrice();
-                                    //int qty = products.get(getPos()).getProduct_qty();
-                                    //String img = products.get(getPos()).getProduct_img();
-                                    setUser(user);
-                                    setSKU(SKU);
-                                    setPrice(price);
-                                    updatedCart = true;
-                                    new removeFromCart().execute();
-
-                                }
-                            });
-
-                        }
-                */
-                listView.setAdapter(adaptCart);
+            //listView.notifyAll();
+            listView.setAdapter(adaptCart);
             }
         //}
     }
@@ -300,7 +248,7 @@ public class Cart extends AppCompatActivity {
             totals.setText(String.format("%.2f", Float.parseFloat(String.valueOf(tempTotal + shipCost + tax))));
             //new returnCartItems().execute();
             //setTotal(tempTotal);
-            //super.onPostExecute(result);
+            super.onPostExecute(result);
         }
     }
 

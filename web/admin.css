@@ -1,0 +1,299 @@
+.jumbotron {
+    height: 200px;
+    margin-top: -50px;
+}
+
+html {
+    overflow: hidden;
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    overflow: auto;
+}
+
+h1 {
+	text-align: center;
+}
+
+p {
+	margin: 0 0 10px;
+}
+
+.container {
+    max-width:1024px;
+    min-width:1024px;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.div_container {
+    width: 100%;
+}
+
+.left_div_product {
+    float:left;
+    width:66%;
+    border: 1px solid #e2e2e2;
+    background-color: #eee;
+    padding: 5px;
+}
+.div_product_container{
+    border: 1px solid #e2e2e2;
+    background: #eee;
+    padding: 5px;
+}
+
+.div_product_inner_top {
+    padding:5px;
+    background:#fff;
+    min-height:600px;
+}
+
+.div_small_inner {
+    width:583px;
+    height:auto;
+    margin:0 auto;
+}
+
+.des_title .heading_wibr {
+    border-bottom:1px solid #e5e5e5;
+    line-height:19px;
+    margin-top:-70px;
+    width:100%;
+    font-size:19px;
+    color:#58595b;
+    padding-bottom:10px
+}
+
+.des_title p {
+    color:#58595b;
+    margin-bottom:14px;
+    padding-bottom:20px
+}
+
+.des_title ul {
+    margin:0;
+    padding:0
+}
+
+.des_title ul li {
+    color:#656565;
+    font-size:15px;
+    padding-bottom:10px
+}
+
+.required span{
+  color: red;
+} 
+
+.required_empty {
+    border: 1px solid rgb(187, 26, 26);
+}
+
+.feedback{
+    margin: 10px 0px;
+    padding: 10px;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+/** Buttons **/
+
+.primary_btn {
+    margin-left:-4px;
+    padding: 6px 12px;
+    background-color:#3498db;
+    color:#fff;
+    border:none;
+    box-shadow:none;
+    outline:none
+}
+
+.primary_btn:hover {
+    background-color:#2980b9;
+    padding-right: -5px;
+}
+
+.secondary_btn {
+    margin-left: -4px;
+    padding: 6px 12px;
+    background-color:#B6AFA9;
+    color:#fff;
+    border:none;
+    box-shadow:none;
+    outline:none;
+}
+
+.secondary_btn:hover {
+    background-color:#97694F;
+    padding-right: -5px;
+}
+
+.float_left {
+    float:left;
+}
+
+.float_right {
+    float: right;
+}
+
+.form_label {
+    margin-bottom: 0;
+    padding-bottom: 3px;
+    font-size: 12px;
+}
+
+.form_column {
+    margin-right: 25px;
+}
+
+.form_row {
+    margin-bottom: 15px;
+}
+
+.button_row input {
+    margin-left: 15px;
+}
+
+.des_title p {
+    color: #58595b;
+    margin-bottom: 14px;
+    padding-bottom: 20px;
+}
+
+.heading_form {
+    line-height: 19px;
+    margin-top: 25px;
+    font-size: 19px;
+    color: #58595b;
+    padding-bottom: 10px;
+}
+
+.contact_form_container {
+    margin-top: 30px;
+}
+
+
+.des_title .heading_wibr {
+    border-bottom: 1px solid #e5e5e5;
+    line-height: 19px;
+    padding-top: 40px;
+    width: 100%;
+    font-size: 19px;
+    color: #58595b;
+    padding-bottom: 15px;
+    text-align: center;
+}
+
+.des_title .heading_wibr1 {
+    border-bottom:1px solid #e5e5e5;
+    line-height:19px;
+    margin-top:25px;
+    width:100%;
+    font-size:30px;
+    color:#58595b;
+    padding-bottom:10px
+}
+
+
+.des_title p {
+    color: #58595b;
+    margin-bottom: 14px;
+    padding-bottom: 20px;
+    text-align: center;
+}
+
+.form_column {
+    margin-right: 25px;
+}
+
+select {
+    border: 1px solid #ccc;
+}
+
+.hidden {
+    display: none!important;
+    visibility: hidden!important;
+}
+
+input {
+    border: 1px solid #ccc;
+}
+
+input {
+    padding-left: 10px;
+    padding-top: 5px;
+}
+
+.image_upload {
+    margin: 15px 0px;
+}
+
+.input_image_upload {
+    border: none;
+    font-size: 11px;
+    padding: 0px;
+}
+
+input.invalid, textarea.invalid {
+    border: 2px solid red;
+}
+
+.sml_size {
+    width: 80px;
+}
+
+.xsmall_size {
+    width: 40px;
+}
+
+.mid_size {
+    width: 220px;
+}
+
+.message_area {
+    max-width: 583px;
+    max-height: 120px;
+    padding: 10px;
+    color: #333;
+    border: 1px solid #ccc;
+}
+
+.full_width {
+    width: 100%;
+}
+
+.head_btn {
+    padding: 8px 0px;
+}
+
+.login {
+  padding: 15px;
+  width: 400px;
+  min-height: 400px;
+  margin: 2% auto 0 auto;
+
+  .heading {
+    text-align: center;
+    margin-top: 1%;
+  }
+
+}
+
+#send_btn {
+    float: right;
+    position: relative;
+    top: 10px;
+    right: 20px;
+    border-radius: 1em;
+}
+
+#login_btn {
+    float: right;
+    position: relative;
+    top: 10px;
+    right: 10px;
+    border-radius:1em;
+}
