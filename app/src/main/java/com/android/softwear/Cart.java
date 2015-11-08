@@ -1,38 +1,29 @@
 package com.android.softwear;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.android.softwear.interfaces.CartChangeListener;
 import com.android.softwear.models.Account;
 import com.android.softwear.models.Product;
 import com.android.softwear.process.ConnectDB;
 import com.android.softwear.process.ProductAdapter;
-import com.android.softwear.process.ProductsAdapter;
-import com.squareup.picasso.Picasso;
 
-import java.net.URI;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.Inflater;
 
 /**
  * Created by Michael on 10/19/2015.
@@ -41,16 +32,14 @@ public class Cart extends AppCompatActivity {
 
     private String user;
     static final String TAG = "";
-    ProductAdapter adaptCart;
     static ArrayList<Product> cartItems = new ArrayList<>();
-    Button remove_btn;
+    ProductAdapter adaptCart;
     ListView listView;
+    static int cartSize = 0;
     Menu menu;
-    float total = (float)0.00;
     float shipCost = 15;
     float tax = (float)0.07;
     float taxRate = (float) 0.07;
-    String URI;
     TextView subTotal;
     TextView shipping;
     TextView taxes;
@@ -62,7 +51,6 @@ public class Cart extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
-        //ListView.addHeaderView(headerView);
         user = MainActivity.currentAccount.getUsername();
         if(user == null || user.equals("Guest")) {
             shipCost = (float)0.00;
@@ -70,13 +58,27 @@ public class Cart extends AppCompatActivity {
         }
         if(user != null && !(user.equals("Guest"))) {
             new getCartIcon().execute();
-            new returnCartItems().execute();
-            ArrayList<Product> tempItems = getCartItems();
-            Log.d(TAG, "cartItems size: " + String.valueOf(tempItems.size()));
-            listView = (ListView) findViewById(R.id.list_cart_view);
-            adaptCart = new ProductAdapter(Cart.this, 0, tempItems);
+            //cartItems = new ArrayList<>();
+            if(getCartNumber() != cartItems.size()) {
+                cartSize = ProductAdapter.getCartSize();
+                new refreshCartIcon().execute();
+            }
+            if(cartItems == null || cartItems.size() != getCartNumber()) {
+                new returnCartItems().execute();
+            }
+            Log.d(TAG, "cartItems size: " + String.valueOf(cartItems.size()));
+            Log.d(TAG, "cartNumb size: " + getCartNumber());
+
+            if(getCartNumber() == cartItems.size()) {
+                listView = (ListView) findViewById(R.id.list_cart_view);
+                adaptCart = new ProductAdapter(Cart.this, 0, cartItems);
+                adaptCart.notifyDataSetChanged();
+            }
+            if(listView != null) {
+                adaptCart.notifyDataSetChanged();
+                listView.setAdapter(adaptCart);
+            }
             //listView.notifyAll();
-            listView.setAdapter(adaptCart);
             }
         //}
     }
@@ -161,20 +163,6 @@ public class Cart extends AppCompatActivity {
         if (id == R.id.action_about_us) {
             setContentView(R.layout.activity_about_us);
         }
-        /*
-        if (id == R.id.action_search) {
-            setContentView(R.layout.activity_search;
-            getData = (TextView) findViewById(R.id.textView_test);
-            //Button search_btn = (Button) findViewById(R.id.search_btn);
-            new returnProducts().execute();
-            /*
-            search_btn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    new returnSearchProduct().execute();
-                }
-            });
-        }*/
 
         if (MainActivity.currentAccount != null && id == R.id.action_logout) {
             MainActivity.currentAccount.setFirst_name("Guest");
@@ -186,7 +174,6 @@ public class Cart extends AppCompatActivity {
             setUser(MainActivity.currentAccount);
             new getCartIcon().execute();
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -248,14 +235,14 @@ public class Cart extends AppCompatActivity {
             totals.setText(String.format("%.2f", Float.parseFloat(String.valueOf(tempTotal + shipCost + tax))));
             //new returnCartItems().execute();
             //setTotal(tempTotal);
+            setCartNumber(cartNum);
             super.onPostExecute(result);
         }
     }
 
-    public class returnCartItems extends AsyncTask<Void, Void, Void> {
+    public class refreshCartIcon extends AsyncTask<Void, Void, Void> {
         String tempUser = user;
-        Product product = null;
-        List<Integer> skus = new ArrayList<>();
+        int cartNum = 0;
 
         @Override
         protected void onPreExecute() {
@@ -275,47 +262,8 @@ public class Cart extends AppCompatActivity {
                     final ResultSet result = st.executeQuery(queryString);
 
                     while (result.next()) {
-                        try {
-                            skus.add(result.getInt("SKU"));
-                        } catch(SQLException e) {
-                            e.printStackTrace();
-                        }
+                        cartNum++;
                     }
-                    conn.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                try {
-                    Connection conn = ConnectDB.getConnection();
-                    String queryString = "SELECT * FROM Inventory";
-
-                    PreparedStatement st = conn.prepareStatement(queryString);
-                    //st.setString(1, tempUser);
-
-                    final ResultSet result = st.executeQuery(queryString);
-
-                    while (result.next()) {
-                        for(int i=0; i < skus.size(); i++) {
-                            if(skus.get(i) == result.getInt("SKU")) {
-                                product = new Product();
-                                product.setProduct_name(result.getString("Name"));
-                                product.setSKU(result.getInt("SKU"));
-                                product.setProduct_dept(result.getString("Department"));
-                                product.setProduct_desc(result.getString("Description"));
-                                product.setPrice(result.getFloat("Price"));
-                                product.setProduct_qty(result.getInt("Quantity"));
-                                product.setProduct_img(result.getString("Image"));
-                                cartItems.add(product);
-                                /*
-                                descr += "Product: " + result.getString("Name") + "\n" +
-                                "Department: " + result.getString("Department") + "\n" +
-                                "Price: $" + result.getFloat("Price") + "\n\n";
-                                */
-                            }
-                        }
-                    }
-                    conn.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -324,17 +272,83 @@ public class Cart extends AppCompatActivity {
         }
 
         protected void onPostExecute(Void result) {
-            setCartItems(cartItems);
+            getCartItems(cartNum);
+            setCartNumber(cartNum);
+            super.onPostExecute(result);
+        }
+    }
+
+    public class returnCartItems extends AsyncTask<Void, Void, Void> {
+        String tempUser = user;
+        Product product = null;
+        ArrayList<Product> tempItems = new ArrayList<>();
+        List<Integer> skus = new ArrayList<>();
+
+        @Override
+        protected void onPreExecute() {
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+
+            if(tempUser != null) {
+                if ((getCartNumber() > 0 && cartItems == null) ||
+                        (cartItems.size() != getCartNumber())) {
+                    try {
+                        Connection conn = ConnectDB.getConnection();
+                        String queryString = "SELECT * FROM Orders WHERE `User_Name` = '" + tempUser + "'";
+                        PreparedStatement st = conn.prepareStatement(queryString);
+                        final ResultSet result = st.executeQuery(queryString);
+                        while (result.next()) {
+                            try {
+                                skus.add(result.getInt("SKU"));
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        conn.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        Connection conn = ConnectDB.getConnection();
+                        String queryString = "SELECT * FROM Inventory";
+                        PreparedStatement st = conn.prepareStatement(queryString);
+                        final ResultSet result = st.executeQuery(queryString);
+                        while (result.next()) {
+                            for (int i = 0; i < skus.size(); i++) {
+                                if (skus.get(i) == result.getInt("SKU")) {
+                                    product = new Product();
+                                    product.setProduct_name(result.getString("Name"));
+                                    product.setSKU(result.getInt("SKU"));
+                                    product.setProduct_dept(result.getString("Department"));
+                                    product.setProduct_desc(result.getString("Description"));
+                                    product.setPrice(result.getFloat("Price"));
+                                    product.setProduct_qty(result.getInt("Quantity")-(result.getInt("Quantity")-1));
+                                    product.setProduct_img(result.getString("Image"));
+                                    tempItems.add(product);
+                                }
+                            }
+                        }
+                        conn.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+            return null;
+        }
+
+        protected void onPostExecute(Void result) {
+            setCartItems(tempItems);
             super.onPostExecute(result);
         }
     }
 
     public void setCartItems(ArrayList<Product> cartItems) {
         this.cartItems = cartItems;
-    }
-
-    public ArrayList<Product> getCartItems() {
-        return cartItems;
     }
 
     public class userLog extends AsyncTask<Void, Void, Void> {
@@ -436,5 +450,17 @@ public class Cart extends AppCompatActivity {
         TextView textName = (TextView) findViewById(R.id.textView_hello);
         textName.setTextSize(22);
         textName.setText(aloha);
+    }
+
+    public void setCartNumber(int cartSize) {
+        this.cartSize = cartSize;
+    }
+
+    public static Integer getCartNumber() {
+        return cartSize;
+    }
+
+    public static ArrayList<Product> getCartList() {
+        return cartItems;
     }
 }

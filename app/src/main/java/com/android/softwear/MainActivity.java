@@ -129,10 +129,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (id == R.id.action_account) {
+            new getCartIcon().execute();
             startActivity(new Intent(getApplicationContext(), AccountActivity.class));
         }
 
         if (id == R.id.action_about_us) {
+            new getCartIcon().execute();
             setContentView(R.layout.activity_about_us);
         }
         /*

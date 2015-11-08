@@ -126,6 +126,15 @@
             android:gravity="center_vertical|right|top">
 
             <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="invisible"
+                android:gravity="center"
+                android:text="Try Me!"
+                android:id="@+id/try_btn" />
+
+            <Button
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -133,13 +142,6 @@
             android:text="@string/try_me"
             android:id="@+id/cart_btn" />
 
-            <Button
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="Try Me!"
-                android:id="@+id/try_btn" />
         </LinearLayout>
 
     </LinearLayout>

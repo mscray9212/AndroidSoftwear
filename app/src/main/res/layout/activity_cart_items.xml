@@ -4,7 +4,7 @@
     android:layout_height="110dp"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/bg"
-    tools:context=".MainActivity">
+    tools:context=".Cart">
     android:padding="5dp">
 
     <!-- Display Product image, Product name, Product description, and Product price -->
@@ -110,15 +110,5 @@
         android:id="@+id/remove_btn"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true" />
-    <!--
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="View"
-        android:id="@+id/view_btn"
-        android:layout_below="@+id/product_dept"
-        android:layout_alignParentEnd="true" />
-    android:textStyle="bold"/>
-    -->
+
 </RelativeLayout>

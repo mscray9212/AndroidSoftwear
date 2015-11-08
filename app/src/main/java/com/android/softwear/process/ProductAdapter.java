@@ -12,6 +12,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -21,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.softwear.Cart;
 import com.android.softwear.MainActivity;
 import com.android.softwear.R;
 import com.android.softwear.models.Product;
@@ -48,7 +51,9 @@ public class ProductAdapter extends ArrayAdapter<Product> {
     private ArrayList<Product> products;
     ArrayList<Product> cartItems;
     Product product;
+    Menu menu;
     static Integer size;
+    static Integer cartSize;
     private static LayoutInflater inflater = null;
     static View vi;
     String money = "$";
@@ -145,6 +150,8 @@ public class ProductAdapter extends ArrayAdapter<Product> {
         String tempUser = MainActivity.currentAccount.getUsername();
         Product updateCart = getProduct();
         ArrayList<Product> cartItems = getCartItems();
+        ArrayList<Product> cartUpdate = Cart.getCartList();
+        Integer cartNumber = Cart.getCartNumber();
         Integer tempSKU = updateCart.getSKU();
         String queryResult = "";
 
@@ -167,6 +174,8 @@ public class ProductAdapter extends ArrayAdapter<Product> {
                     queryResult = "Database connection failure!\n" + e.toString();
                 }
                 cartItems.remove(updateCart);
+                cartUpdate.remove(updateCart);
+                setCartSize(cartNumber-1);
             }
             return null;
         }
@@ -234,8 +243,9 @@ public class ProductAdapter extends ArrayAdapter<Product> {
         this.size = size;
     }
 
-    private Integer getCartSize() {
+    public static Integer getCartSize() {
         return size;
     }
+
 
 }
