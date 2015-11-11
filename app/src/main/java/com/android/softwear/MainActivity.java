@@ -5,47 +5,46 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.TextView;
 
-import com.android.softwear.interfaces.CartChangeListener;
 import com.android.softwear.models.Account;
 import com.android.softwear.models.Product;
-import com.android.softwear.process.ProductsAdapter;
 import com.android.softwear.process.ConnectDB;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     //ProductQuery products = new ProductQuery();
     static ArrayList<Product> products = new ArrayList<>();
+
     public static Account currentAccount = new Account();
-    static CartChangeListener cartChangeListener;
-    static String searchString = "";
+    static Integer cartSize = 0;
+    static Integer size = 0;
     private TextView getData;
-    ListAdapter adapter;
     private String user;
     static int cartNum;
-    boolean addedCart = false;
+    static boolean loggedIn = false;
+    String TAG = "";
     Menu menu;
-    //int cartItems =
-
-    //public static Connection getConnect = ConnectDB.getConnection();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         new retrieveAllProducts().execute();
+        new getCartCount().execute();
+        Log.d(TAG, "Logged in: " + loggedIn);
         setContentView(R.layout.activity_main);
         //final ActionBar actionBar = getActionBar();
         //actionBar.setDisplayShowTitleEnabled(false);
@@ -62,6 +61,14 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         this.menu = menu;
         return true;
+    }
+
+    @Override
+    public  void onResume() {
+        super.onResume();
+        if(loggedIn) {
+            update();
+        }
     }
 
     @Override
@@ -87,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
                     currentAccount.setPassword(password);
                     currentAccount.setUsername(username);
                     new userLog().execute();
+
                 }
             });
         }
@@ -119,38 +127,32 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (id == R.id.action_cart) {
-            new getCartIcon().execute();
+            if(loggedIn) {
+                update();
+            }
             startActivity(new Intent(getApplicationContext(), Cart.class));
         }
 
         if (id == R.id.action_search) {
-            new getCartIcon().execute();
+            if(loggedIn) {
+                update();
+            }
             startActivity(new Intent(getApplicationContext(), Search.class));
         }
 
         if (id == R.id.action_account) {
-            new getCartIcon().execute();
+            if(loggedIn) {
+                update();
+            }
             startActivity(new Intent(getApplicationContext(), AccountActivity.class));
         }
 
         if (id == R.id.action_about_us) {
-            new getCartIcon().execute();
+            if(loggedIn) {
+                update();
+            }
             setContentView(R.layout.activity_about_us);
         }
-        /*
-        if (id == R.id.action_search) {
-            setContentView(R.layout.activity_search;
-            getData = (TextView) findViewById(R.id.textView_test);
-            //Button search_btn = (Button) findViewById(R.id.search_btn);
-            new returnProducts().execute();
-            /*
-            search_btn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    new returnSearchProduct().execute();
-                }
-            });
-        }*/
 
         if (currentAccount != null && id == R.id.action_logout) {
             currentAccount.setFirst_name("Guest");
@@ -160,26 +162,18 @@ public class MainActivity extends AppCompatActivity {
             currentAccount.setUsername("Guest");
             setContentView(R.layout.activity_main);
             setUser(currentAccount);
+            setLog(false);
             new getCartIcon().execute();
         }
 
         return super.onOptionsItemSelected(item);
     }
-    /*
-    public void userLog(View view) {
-        EditText user_Name, user_Pass;
-        String password, username;
-        user_Name = (EditText) findViewById(R.id.editText_username);
-        user_Pass = (EditText) findViewById(R.id.editText_password);
-        password = user_Pass.getText().toString();
-        username = user_Name.getText().toString();
-        account.setPassword(password);
-        account.setUsername(username);
-        Login.login(account, getConnect);
-        setUser(account);
 
+    public void update() {
+        Log.d(TAG, "Logged in: " + loggedIn);
+        new getCartIcon().execute();
     }
-    */
+
     public class userLog extends AsyncTask<Void, Void, Void> {
         String queryResult = "";
 
@@ -204,6 +198,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Void result) {
             setUser(currentAccount);
             getData.setText(queryResult);
+            setLog(true);
             new getCartIcon().execute();
             super.onPostExecute(result);
         }
@@ -234,42 +229,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Void result) {
             setUser(currentAccount);
             getData.setText(queryResult);
-            super.onPostExecute(result);
-        }
-    }
-
-    public class userSearch extends AsyncTask<Void, Void, Void> {
-        String queryResult = "";
-
-
-        @Override
-        protected Void doInBackground(Void... arg0) {
-            try {
-                Connection conn = ConnectDB.getConnection();
-                if(conn != null) {
-                    queryResult = "Successfully connected!";
-                    /*
-                    List<Product> products;
-
-                    products = SearchQuery.searchProducts(searchString, conn);
-                    for (Product product: products) {
-                        //displayProducts();
-                    }
-                    */
-                }
-                else {
-                    queryResult = "Error in connection";
-                }
-            }
-            catch(Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(Void result) {
-            setUser(currentAccount);
-            getData.setText(queryResult);
+            setLog(true);
             super.onPostExecute(result);
         }
     }
@@ -277,157 +237,6 @@ public class MainActivity extends AppCompatActivity {
     public void userReg(View view) {
         setContentView(R.layout.activity_register);
     }
-
-    //class returnProducts extends AsyncTask<Void, Void, ArrayList<Product>> {
-    class returnProducts extends AsyncTask<Void, Void, Void> {
-        ArrayList<Product> products = new ArrayList<>();
-        String queryResult = "";
-
-        //protected ArrayList<Product> doInBackground(Void... arg0) {
-        protected Void doInBackground(Void... arg0) {
-
-            try {
-                queryResult = "Database connection success\n";
-                Connection conn = ConnectDB.getConnection();
-                String queryString = "SELECT * FROM inventory";
-
-                Statement st = conn.createStatement();
-                final ResultSet result = st.executeQuery(queryString);
-
-                while(result.next()) {
-                    queryResult +=
-                            "Product: " + result.getString("Name") + "\n" +
-                                    "Description: " + result.getString("Description") + "\n" +
-                                    "Price: $" + result.getFloat("Price") + "\n\n";
-                }
-                conn.close();
-            }
-
-            catch(Exception e) {
-                e.printStackTrace();
-                queryResult = "Database connection failure!\n" + e.toString();
-            }
-            return null;
-
-            /*
-            products = ProductQuery.returnProducts();
-            return products;
-            */
-        }
-
-        protected void onPostExecute(Void result) {
-            getData.setText(queryResult);
-            /*
-            ProductsAdapter adbProduct;
-            adbProduct = new ProductsAdapter(MainActivity.this, 0, products);
-            ListView listview = (ListView) findViewById(R.id.lvShopItems);
-            listview.setAdapter(adbProduct);
-            */
-        }
-
-    }
-
-    class returnProductView extends AsyncTask<Void, Void, ArrayList<Product>> {
-        ArrayList<Product> products = new ArrayList<>();
-        String queryResult = "";
-        String search = returnSearchString();
-
-        protected ArrayList<Product> doInBackground(Void... arg0) {
-        //protected Void doInBackground(Void... arg0) {
-
-            try {
-                queryResult = "Database connection success\n";
-                Connection conn = ConnectDB.getConnection();
-                String queryString = "SELECT * FROM inventory WHERE Name Like ? OR Department LIKE ? OR Description Like ?";
-
-                PreparedStatement st = conn.prepareStatement(queryString);
-                st.setString(1, "%" + search + "%");
-                st.setString(2, "%" + search + "%");
-                st.setString(3, "%" + search + "%");
-                final ResultSet result = st.executeQuery(queryString);
-
-                while(result.next()) {
-                    queryResult +=
-                            "Product: " + result.getString("Name") + "\n" +
-                                    "Description: " + result.getString("Description") + "\n" +
-                                    "Price: $" + result.getFloat("Price") + "\n\n";
-                }
-                conn.close();
-            }
-
-            catch(Exception e) {
-                e.printStackTrace();
-                queryResult = "Database connection failure!\n" + e.toString();
-            }
-            //result = ProductQuery.returnProducts(result);
-            return null;
-            //products = ProductQuery.returnProducts();
-            //return products;
-
-        }
-
-        protected void onPostExecute(Void result) {
-            getData.setText(queryResult);
-
-            ProductsAdapter adbProduct;
-            //adbProduct = new ProductsAdapter(MainActivity.this, 0, products);
-            //ListView listview = (ListView) findViewById(R.id.lvShopItems);
-            //listview.setAdapter(adbProduct);
-
-        }
-
-    }
-
-    public String returnSearchString() {
-        EditText inputSearch;
-        String search = "";
-        //inputSearch = (EditText) findViewById(R.id.editText_search);
-        //search = inputSearch.getText().toString();
-        return search;
-    }
-    /*
-            ArrayAdapter<Product> arrayAdapter = new ArrayAdapter<Product>(
-                this,
-                android.R.layout.simple_list_item_1,
-                products);
-        ListView lv = (ListView) findViewById(R.id.lvShopItems);
-        lv.setAdapter(arrayAdapter);
-        /*
-        adapter = new ArrayAdapter<Integer, Double>(this, R.layout.activity_search, R.id.)
-        product.getSKU();
-        product.getProduct_name();
-        product.getProduct_dept();
-        product.getPrice();
-        product.getProduct_desc();
-        product.getProduct_img();
-        product.getProduct_qty();
-        return product;
-        */
-    /*
-    public void userRegister(View view) {
-        EditText first_Name, last_Name, user_Email, user_Name, user_Pass;
-        String fName, lName, email, username, password;
-
-        first_Name = (EditText)findViewById(R.id.editText_firstName);
-        last_Name = (EditText)findViewById(R.id.editText_lastName);
-        user_Email = (EditText)findViewById(R.id.editText_email);
-        user_Name = (EditText)findViewById(R.id.editText_username);
-        user_Pass = (EditText)findViewById(R.id.editText_password);
-
-        fName = first_Name.getText().toString();
-        lName = last_Name.getText().toString();
-        email = user_Email.getText().toString();
-        password = user_Pass.getText().toString();
-        username = user_Name.getText().toString();
-        Account account = new Account();
-        account.setFirst_name(fName);
-        account.setLast_name(lName);
-        account.setEmail(email);
-        account.setPassword(password);
-        account.setUsername(username);
-        Register.register(account);
-        setUser(account);
-    }*/
 
     public void getCartItems(int cart) {
 
@@ -576,8 +385,65 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public class getCartCount extends AsyncTask<Void, Void, Void> {
+        String tempUser = currentAccount.getUsername();
+        int cartNum = 0;
+
+        @Override
+        protected void onPreExecute() {
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            if(tempUser != null) {
+                try {
+                    Connection conn = ConnectDB.getConnection();
+                    String queryString = "SELECT * FROM Orders WHERE `User_Name` = '" + tempUser + "'";
+
+                    PreparedStatement st = conn.prepareStatement(queryString);
+                    //st.setString(1, tempUser);
+
+                    final ResultSet result = st.executeQuery(queryString);
+
+                    while (result.next()) {
+                        cartNum++;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            setCartSize(cartNum);
+            return null;
+        }
+
+        protected void onPostExecute(Void result) {
+
+        }
+    }
+
+    public static void setCartSize(Integer size) {
+        MainActivity.size = size;
+    }
+
     public static ArrayList<Product> getProducts() {
         return products;
+    }
+
+    public static Integer getCartNumber() {
+        return cartSize;
+    }
+
+    public static Integer getCartSize() {
+        return size;
+    }
+
+    public static void setLog(boolean loggedIn) {
+        MainActivity.loggedIn = loggedIn;
+    }
+
+    public static Boolean getLog() {
+        return loggedIn;
     }
 
 

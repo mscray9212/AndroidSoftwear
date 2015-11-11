@@ -102,6 +102,7 @@ public class ProductsAdapter extends ArrayAdapter<Product> {
             URI = "http://www.michaelscray.com/Softwear/graphics/";
             URI += products.get(position).getProduct_img();
             Uri uri = Uri.parse(URI + products.get(position).getProduct_img());
+            //if(your condition here) rowView.setBackgroundColor(Color.parseColor("#20FFFFFF"));
             holder.product_name.setText(products.get(position).getProduct_name());
             holder.product_desc.setText(products.get(position).getProduct_desc());
             holder.product_dept.setText(dept + products.get(position).getProduct_dept());

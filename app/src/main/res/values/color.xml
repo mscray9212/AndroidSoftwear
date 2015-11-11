@@ -3,8 +3,9 @@
     <color name="red_welcome">#db4545</color>
     <color name="vertical_divider_welcome">#e1e1e1</color>
     <color name="marquee_box_bg">#e2edfb</color>
-    <color name = "marquee_text"> #5e80ab</color>
+    <color name="marquee_text"> #5e80ab</color>
+    <color name="tan">#FFEC8B</color>
 
-    <color name = "blue"> #577aa7</color>
-    <color name = "green">#55c892</color>
+    <color name="blue"> #577aa7</color>
+    <color name="green">#55c892</color>
 </resources>

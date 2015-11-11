@@ -1,25 +1,17 @@
 package com.android.softwear.process;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,19 +19,11 @@ import com.android.softwear.Cart;
 import com.android.softwear.MainActivity;
 import com.android.softwear.R;
 import com.android.softwear.models.Product;
-import com.android.volley.toolbox.ImageLoader;
 import com.squareup.picasso.Picasso;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
@@ -49,11 +33,11 @@ public class ProductAdapter extends ArrayAdapter<Product> {
 
     private Activity activity;
     private ArrayList<Product> products;
-    ArrayList<Product> cartItems;
     Product product;
+    private Integer SKU;
     Menu menu;
+    static Product removeProduct;
     static Integer size;
-    static Integer cartSize;
     private static LayoutInflater inflater = null;
     static View vi;
     String money = "$";
@@ -67,7 +51,6 @@ public class ProductAdapter extends ArrayAdapter<Product> {
         try {
             this.activity = activity;
             this.products = product;
-            setCartItems(products);
             new getCartCount().execute();
             inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             //imageLoader = new ImageLoader(activity.getApplicationActivity());
@@ -81,8 +64,8 @@ public class ProductAdapter extends ArrayAdapter<Product> {
         return products.size();
     }
 
-    public Product getItem(Product position) {
-        return position;
+    public Product getItem(int position) {
+        return products.get(position);
     }
 
     @Override
@@ -100,10 +83,10 @@ public class ProductAdapter extends ArrayAdapter<Product> {
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
+        int pos = position;
         vi = convertView;
         final ViewHolder holder;
 
-        if(cartItems.size() == getCount()) {
             try {
                 if (convertView == null) {
                     vi = inflater.inflate(R.layout.activity_cart_items, parent, false);
@@ -128,31 +111,36 @@ public class ProductAdapter extends ArrayAdapter<Product> {
                 holder.product_price.setText(money + String.valueOf(products.get(position).getPrice()));
                 holder.product_qty.setText(qty + String.valueOf(products.get(position).getProduct_qty()));
                 Picasso.with(getContext()).load(URI).error(R.mipmap.ic_launcher).into(holder.product_img);
-                setProduct(getItem(position));
 
+                setSKU(products.get(position).getSKU());
                 remove.setOnClickListener(new View.OnClickListener() {
+                    Boolean update = false;
                     @Override
                     public void onClick(View v) {
-                        //do something
-                        new removeCartItem().execute(); //or some other task
-                        notifyDataSetChanged();
+                        update = true;
+                        Intent intent = new Intent(getContext(), Cart.class);
+                        intent.putExtra("update", update);
+                        SKU = getSKU();
+                        new removeCartItem().execute();
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        getContext().startActivity(intent);
                     }
                 });
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
+
 
         return vi;
     }
 
-    public class removeCartItem extends AsyncTask<Void, Void, Void> {
+    public class removeCartItem extends AsyncTask<Void, Integer, Void> {
         String tempUser = MainActivity.currentAccount.getUsername();
         Product updateCart = getProduct();
-        ArrayList<Product> cartItems = getCartItems();
         ArrayList<Product> cartUpdate = Cart.getCartList();
         Integer cartNumber = Cart.getCartNumber();
-        Integer tempSKU = updateCart.getSKU();
+        Integer tempSKU = getSKU();
         String queryResult = "";
 
         protected void onPreExecute() {
@@ -165,7 +153,6 @@ public class ProductAdapter extends ArrayAdapter<Product> {
                 try {
                     Connection conn = ConnectDB.getConnection();
                     String queryString = "DELETE FROM `Orders` WHERE `User_Name` = '"+tempUser+"' AND `SKU` = '"+tempSKU+"'";
-                /*  Insert User_Name, SKU, Price, and Shipped   */
                     PreparedStatement st = conn.prepareStatement(queryString);
                     st.executeUpdate();
                     conn.close();
@@ -173,9 +160,9 @@ public class ProductAdapter extends ArrayAdapter<Product> {
                     e.printStackTrace();
                     queryResult = "Database connection failure!\n" + e.toString();
                 }
-                cartItems.remove(updateCart);
                 cartUpdate.remove(updateCart);
-                setCartSize(cartNumber-1);
+                //Cart.setCartList(updateCart);
+                MainActivity.setCartSize(cartNumber - 1);
             }
             return null;
         }
@@ -219,33 +206,26 @@ public class ProductAdapter extends ArrayAdapter<Product> {
         }
 
         protected void onPostExecute(Void result) {
-
+            super.onPostExecute(result);
         }
-    }
-
-    private void setProduct(Product product) {
-        this.product = product;
     }
 
     private Product getProduct() {
         return product;
     }
 
-    private void setCartItems(ArrayList<Product> cartItems) {
-        this.cartItems = cartItems;
-    }
-
-    private ArrayList<Product> getCartItems() {
-        return cartItems;
-    }
-
     private void setCartSize(Integer size) {
         this.size = size;
     }
 
-    public static Integer getCartSize() {
-        return size;
+    public void setSKU(Integer SKU) {
+        this.SKU = SKU;
     }
+
+    public Integer getSKU() {
+        return SKU;
+    }
+
 
 
 }

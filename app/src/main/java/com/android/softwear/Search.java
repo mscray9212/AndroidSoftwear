@@ -28,6 +28,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.softwear.interfaces.CartChangeListener;
 import com.android.softwear.models.Product;
 import com.android.softwear.process.ConnectDB;
 import com.android.softwear.process.ProductsAdapter;
@@ -49,30 +50,17 @@ public class Search extends AppCompatActivity {
 
     // placeholder that you will be updating with the database data
     ArrayList<Product> products = MainActivity.getProducts();
-    Menu mainMenu;
     ProductsAdapter adaptProducts;
     ListView listview;
     static int pos;
     static AdapterView<?> par;
     String URI, URI_W;
+    String searchResult = "";
     private String user;
     private Integer SKU;
     private float price;
     static boolean updatedCart = false;
     static final String TAG = "Search text:";
-    private ActionBar actionBar;
-    Menu menu;
-    Bitmap bit;
-    /*
-    // action bar
-    private ActionBar actionBar;
-
-    // Title navigation Spinner data
-    ArrayList<String> navSpinner;
-
-    // Navigation adapter
-    TitleNavigationAdapter adapter;
-    */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +74,26 @@ public class Search extends AppCompatActivity {
         }
         listview = (ListView) findViewById(R.id.list_view);
         adaptProducts = new ProductsAdapter(Search.this, 0, products);
+        for(int i=0; i<products.size(); i++) {
+            View rowView = listview.getChildAt(i);
+            if (rowView != null) {
+                try {
+                    String w_folder = "http://www.michaelscray.com/Softwear/graphics/wearables/";
+                    ImageView wearableImage = (ImageView) rowView.findViewById(R.id.icon);
+                    String wearable = w_folder + wearableImage.toString();
+                    String png = wearable.substring(0, URI_W.lastIndexOf('.')) + ".png";
+                    Log.d(TAG, "URL: " + png);
+                    boolean check = new checkFileExists().execute(png).get().booleanValue();
+                    Log.d(TAG, "Check value: " + check);
+                    if (check) {
+                        rowView.setBackgroundColor(getResources().getColor(R.color.tan));
+                        adaptProducts.notifyDataSetChanged();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
         listview.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
@@ -101,12 +109,9 @@ public class Search extends AppCompatActivity {
                     holder.product_price = (TextView) findViewById(R.id.product_price);
                     holder.product_qty = (TextView) findViewById(R.id.product_qty);
                     holder.product_img = (ImageView) findViewById(R.id.icon);
-                    boolean file1, file2 = false;
                     URI = "http://www.michaelscray.com/Softwear/graphics/";
                     URI_W = "http://www.michaelscray.com/Softwear/graphics/wearables/";
 
-                    //if(URI.contains(".")) URI.substring(0, URI.lastIndexOf('.'));
-                    //if(URI_W.contains(".")) URI_W.substring(0, URI_W.lastIndexOf('.'));
                     String dept = "Dept: ";
                     String money = "$";
                     String qty = "Qty: ";
@@ -130,7 +135,7 @@ public class Search extends AppCompatActivity {
                     Log.d(TAG, "JPG: " + URI);
                     Log.d(TAG, "PNG: " + test);
                     //Example: http://www.michaelscray.com/Softwear/graphics/wearables/sampleTwo.png
-                    new checkFileExists().execute(URI);
+                    //new checkFileExists().execute(URI);
                     boolean truth = new checkFileExists().execute(test).get().booleanValue();
                     Log.d(TAG, "Product wearable: " + truth);
                     if (truth) {
@@ -166,6 +171,7 @@ public class Search extends AppCompatActivity {
                             setSKU(SKU);
                             setPrice(price);
                             updatedCart = true;
+                            //cartChangeListener.onCartChanged();
                             new addItemToCart().execute();
                         }
                     });
@@ -177,23 +183,10 @@ public class Search extends AppCompatActivity {
             }
         });
         adaptProducts.notifyDataSetChanged();
-
         listview.setAdapter(adaptProducts);
+        Log.d(TAG, "ListView length: " + listview.getChildCount());
+
     }
-
-    /*
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-
-        MenuItem searchViewMenuItem = menu.findItem(R.id.action_search);
-        SearchView mSearchView = (SearchView) searchViewMenuItem.getActionView();
-        int searchImgId = getResources().getIdentifier("android:id/search_button", null, null);
-        ImageView v = (ImageView) mSearchView.findViewById(searchImgId);
-        v.setImageResource(R.drawable.search);
-
-        return super.onPrepareOptionsMenu(menu);
-    }
-    */
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -204,22 +197,14 @@ public class Search extends AppCompatActivity {
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         MenuItem menuItem = menu.findItem(R.id.action_search);
         android.support.v7.widget.SearchView searchView = (android.support.v7.widget.SearchView) menuItem.getActionView();
-        //android.support.v7.widget.SearchView searchView = (android.support.v7.widget.SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        //MenuItem menuCategory = menu.findItem(R.id.action_category);
-        //Spinner spinner = (Spinner) findViewById(R.id.action_category);
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        //ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.category_options, android.R.layout.simple_spinner_item);
-        //adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
-        //spinner.setAdapter(adapter);
-        Log.d(TAG, "searchView: " + searchView.toString());
 
         searchView.setOnQueryTextListener(new android.support.v7.widget.SearchView.OnQueryTextListener() {
 
             @Override
             public boolean onQueryTextSubmit(String s) {
                 if (s != null || s != "") {
+                    setSearchResult(s);
                     doStuff(s);
                     Log.d(TAG, "onQueryTextSubmit: " + s);
                 }
@@ -229,6 +214,7 @@ public class Search extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String s) {
                 if (s != null || s != "") {
+                    /*
                     int position = 0;
                     while (position < products.size() - 1) {
                         if (products.get(position).getProduct_name().toLowerCase().contains(s.toLowerCase()) ||
@@ -239,9 +225,10 @@ public class Search extends AppCompatActivity {
                         } else {
                             position++;
                         }
-                    }
+                    } */
                     Log.d(TAG, "onQueryTextChange: " + s);
-                    //doStuff(s);
+                    setSearchResult(s);
+                    doStuff(s);
                 }
                 return false;
             }
@@ -278,7 +265,7 @@ public class Search extends AppCompatActivity {
 
     public void doStuff(String result) {
         ArrayList<Product> currProducts = MainActivity.getProducts();
-        ArrayList<Product> searchProducts = new ArrayList<>();
+        final ArrayList<Product> searchProducts = new ArrayList<>();
         listview = (ListView) findViewById(R.id.list_view);
         Product tempProduct;
         for (int i = 0; i < currProducts.size(); i++) {
@@ -287,6 +274,7 @@ public class Search extends AppCompatActivity {
                     currProducts.get(i).getProduct_dept().toLowerCase().contains(result.toLowerCase())) {
 
                 Log.d(TAG, "Product list contains: " + result + " at position: " + i);
+                setTitle("Search Result");
                 tempProduct = new Product();
                 tempProduct.setSKU(products.get(i).getSKU());
                 tempProduct.setProduct_name(products.get(i).getProduct_name());
@@ -298,7 +286,6 @@ public class Search extends AppCompatActivity {
                 try {
                     searchProducts.add(tempProduct);
                     Log.d(TAG, "tempProduct name" + products.get(i).getProduct_name());
-                    //setPos(i);
                 } catch (NullPointerException e) {
                     e.printStackTrace();
                 }
@@ -314,41 +301,60 @@ public class Search extends AppCompatActivity {
                 public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 
                     try {
-                        int positions = position;
+                        //int positions = (Integer) v.getTag();
+                        Product productSearch = (Product)parent.getItemAtPosition(position);
                         setContentView(R.layout.activity_product_view);
+                        try {
+                            getActionBar().setDisplayShowHomeEnabled(false);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
 
-                        Log.d(TAG, "Position: " + positions);
+                        Log.d(TAG, "Item: " + productSearch.getProduct_name());
                         ProductsAdapter.ViewHolder holder = new ProductsAdapter.ViewHolder();
-                        holder.product_name = (TextView) v.findViewById(R.id.product_name);
-                        holder.product_dept = (TextView) v.findViewById(R.id.product_dept);
-                        holder.product_desc = (TextView) v.findViewById(R.id.product_desc);
-                        holder.product_price = (TextView) v.findViewById(R.id.product_price);
-                        holder.product_qty = (TextView) v.findViewById(R.id.product_qty);
-                        holder.product_img = (ImageView) v.findViewById(R.id.icon);
+                        holder.product_name = (TextView) findViewById(R.id.product_name);
+                        holder.product_dept = (TextView) findViewById(R.id.product_dept);
+                        holder.product_desc = (TextView) findViewById(R.id.product_desc);
+                        holder.product_price = (TextView) findViewById(R.id.product_price);
+                        holder.product_qty = (TextView) findViewById(R.id.product_qty);
+                        holder.product_img = (ImageView) findViewById(R.id.icon);
 
                         URI = "http://www.michaelscray.com/Softwear/graphics/";
                         String dept = "Dept: ";
                         String money = "$";
                         String qty = "Qty: ";
-                        URI += products.get(positions).getProduct_img();
-                        Uri uris = Uri.parse(URI + products.get(positions).getProduct_img());
+                        URI += productSearch.getProduct_img();
+                        Uri uris = Uri.parse(URI + productSearch.getProduct_img());
                         URI uri = java.net.URI.create(URI);
-                        holder.product_name.setText(products.get(positions).getProduct_name());
-                        holder.product_desc.setText(products.get(positions).getProduct_desc());
-                        holder.product_dept.setText(dept + products.get(positions).getProduct_dept());
-                        holder.product_price.setText(money + String.valueOf(products.get(positions).getPrice()));
-                        holder.product_qty.setText(qty + String.valueOf(products.get(positions).getProduct_qty()));
+                        holder.product_name.setText(productSearch.getProduct_name());
+                        holder.product_desc.setText(productSearch.getProduct_desc());
+                        holder.product_dept.setText(dept + productSearch.getProduct_dept());
+                        holder.product_price.setText(money + String.valueOf(productSearch.getPrice()));
+                        holder.product_qty.setText(qty + String.valueOf(productSearch.getProduct_qty()));
                         Picasso.with(getApplicationContext()).load(URI).error(R.mipmap.ic_launcher).into(holder.product_img);
-
+                        setSKU(productSearch.getSKU());
+                        setPrice(productSearch.getPrice());
                         Button addToCart = (Button) findViewById(R.id.cart_btn);
                         addToCart.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                /*  Get User_Name, SKU, Price, and Shipped   */
+                                user = MainActivity.currentAccount.getUsername();
+                                SKU = getSKU();
+                                price = getPrice();
+                                setUser(user);
+                                setSKU(SKU);
+                                setPrice(price);
+                                updatedCart = true;
+                                new addItemToCart().execute();
+                                Log.d(TAG, user + ", added item: " + String.valueOf(SKU) + ", for $" + String.valueOf(price));
+                                /*
                                 View parentRow = (View) v.getParent();
                                 ListView listViewItem = (ListView) parentRow.getParent();
                                 final int position = listViewItem.getPositionForView(parentRow);
-                                //int position=(Integer)v.getTag();
-                            /*  Get User_Name, SKU, Price, and Shipped   */
+
+                                int position=(Integer)v.getTag();
+                                /*  Get User_Name, SKU, Price, and Shipped
                                 user = MainActivity.currentAccount.getUsername();
                                 SKU = products.get(position).getSKU();
                                 //String desc = products.get(position).getProduct_desc();
@@ -362,6 +368,7 @@ public class Search extends AppCompatActivity {
                                 Log.d(TAG, user + ", added item: " + String.valueOf(SKU) + ", for $" + String.valueOf(price));
                                 updatedCart = true;
                                 new addItemToCart().execute();
+                                */
                             }
                         });
 
@@ -376,58 +383,6 @@ public class Search extends AppCompatActivity {
             adaptProducts.notifyDataSetChanged();
             listview.setAdapter(adaptProducts);
         }
-    }
-
-    private class returnProductView extends AsyncTask<Void, View, Void> {
-
-        ProductsAdapter.ViewHolder holder;
-        View vi = null;
-        LayoutInflater inflater = null;
-
-        protected void onPreExecute() {
-            try {
-                if (vi == null) {
-                    vi = inflater.inflate(R.layout.activity_product_view, getPar(), false);
-                    ProductsAdapter.ViewHolder holder = new ProductsAdapter.ViewHolder();
-                    holder.product_name = (TextView) vi.findViewById(R.id.product_name);
-                    holder.product_dept = (TextView) vi.findViewById(R.id.product_dept);
-                    holder.product_desc = (TextView) vi.findViewById(R.id.product_desc);
-                    holder.product_price = (TextView) vi.findViewById(R.id.product_price);
-                    holder.product_qty = (TextView) vi.findViewById(R.id.product_qty);
-                    vi.setTag(holder);
-
-                } else {
-                    holder = (ProductsAdapter.ViewHolder) vi.getTag();
-                }
-                String URI = "http://www.michaelscray.com/Softwear/graphics/";
-                String dept = "Dept: ";
-                String money = "$";
-                String qty = "Qty: ";
-                int pos = getPos();
-                URI += products.get(pos).getProduct_img();
-                holder.product_name.setText(products.get(pos).getProduct_name());
-                holder.product_desc.setText(products.get(pos).getProduct_desc());
-                holder.product_dept.setText(dept + products.get(pos).getProduct_dept());
-                holder.product_price.setText(money + String.valueOf(products.get(pos).getPrice()));
-                holder.product_qty.setText(qty + String.valueOf(products.get(pos).getProduct_qty()));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        protected Void doInBackground(Void... arg0)  {
-
-            //new ProductsAdapter.getImageView().execute();
-            //adaptProduct = new ProductsAdapter(Search.this, position, products);
-            //v.getContext().getResources();
-            //v.(adaptProduct);
-            return null;
-        }
-
-        protected View onPostExecute() {
-            return vi;
-        }
-
     }
 
     private class returnAllProducts extends AsyncTask<Void, Void, Void> {
@@ -587,25 +542,13 @@ public class Search extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
     }
-    /*
-    public void setTruth(boolean truth) {
-        this.truth = truth;
+
+    public void setSearchResult(String searchResult) {
+        this.searchResult = searchResult;
     }
 
-    public boolean getTruth() {
-        return truth;
-    }
-    */
-    public void setPos(int pos) {
-        this.pos = pos;
-    }
-
-    public int getPos() {
-        return pos;
-    }
-
-    public AdapterView getPar() {
-        return par;
+    public String getSearchResult() {
+        return searchResult;
     }
 
     public void setUser(String user) {

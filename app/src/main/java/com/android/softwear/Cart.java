@@ -1,6 +1,9 @@
 package com.android.softwear;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +11,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -32,11 +36,13 @@ public class Cart extends AppCompatActivity {
 
     private String user;
     static final String TAG = "";
-    static ArrayList<Product> cartItems = new ArrayList<>();
     ProductAdapter adaptCart;
     ListView listView;
-    static int cartSize = 0;
+    static int cartSize;
     Menu menu;
+    MenuItem cartMenuItem;
+    static ArrayList<Product> cartItems = new ArrayList<>();
+    Boolean update;
     float shipCost = 15;
     float tax = (float)0.07;
     float taxRate = (float) 0.07;
@@ -52,41 +58,38 @@ public class Cart extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
         user = MainActivity.currentAccount.getUsername();
-        if(user == null || user.equals("Guest")) {
-            shipCost = (float)0.00;
-            tax = (float)0.00;
+        new getCartIcon().execute();
+
+        try {
+            cartItems = new returnCartItems().execute().get();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        if(user != null && !(user.equals("Guest"))) {
-            new getCartIcon().execute();
-            //cartItems = new ArrayList<>();
-            if(getCartNumber() != cartItems.size()) {
-                cartSize = ProductAdapter.getCartSize();
-                new refreshCartIcon().execute();
+        listView = (ListView) findViewById(R.id.list_cart_view);
+        adaptCart = new ProductAdapter(Cart.this, 0, cartItems);
+        adaptCart.notifyDataSetChanged();
+        listView.setAdapter(adaptCart);
+        try {
+            Intent intent = getIntent();
+            update = intent.getExtras().getBoolean("update");
+            if(update) {
+                updateCart();
             }
-            if(cartItems == null || cartItems.size() != getCartNumber()) {
-                new returnCartItems().execute();
-            }
-            Log.d(TAG, "cartItems size: " + String.valueOf(cartItems.size()));
-            Log.d(TAG, "cartNumb size: " + getCartNumber());
-
-            if(getCartNumber() == cartItems.size()) {
-                listView = (ListView) findViewById(R.id.list_cart_view);
-                adaptCart = new ProductAdapter(Cart.this, 0, cartItems);
-                adaptCart.notifyDataSetChanged();
-            }
-            if(listView != null) {
-                adaptCart.notifyDataSetChanged();
-                listView.setAdapter(adaptCart);
-            }
-            //listView.notifyAll();
-            }
-        //}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        setCartNumber(cartItems.size());
+        Log.d(TAG, "Cart items: " + cartItems.size());
+        //getCartItems(cartItems.size());
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        int items = getCartNumber();
+        cartMenuItem = menu.findItem(R.id.action_cart);
+        getCartItems(items, cartMenuItem);
+        Log.d(TAG, "getCartNumber() = " + items);
         this.menu = menu;
         return true;
     }
@@ -147,7 +150,9 @@ public class Cart extends AppCompatActivity {
 
         if (id == R.id.action_cart) {
             new getCartIcon().execute();
-            startActivity(new Intent(getApplicationContext(), Cart.class));
+            Intent intent = new Intent(getApplicationContext(), Cart.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
         }
 
         if (id == R.id.action_search) {
@@ -175,6 +180,16 @@ public class Cart extends AppCompatActivity {
             new getCartIcon().execute();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void updateCart() {
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                adaptCart.notifyDataSetChanged();
+            }
+        });
     }
 
     public class getCartIcon extends AsyncTask<Void, Void, Void> {
@@ -207,61 +222,9 @@ public class Cart extends AppCompatActivity {
                     while (result.next()) {
                         try {
                             tempTotal += result.getFloat("Price");
-                            //skus.add(result.getInt("SKU"));
                         } catch(SQLException e) {
                             e.printStackTrace();
                         }
-                        cartNum++;
-                        //setTotal(result.getFloat(String.valueOf("Price")));
-                        }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            return null;
-        }
-
-        protected void onPostExecute(Void result) {
-            String taxation = "Taxes @ %" + String.valueOf(taxRate);
-            getCartItems(cartNum);
-            subTotal.setText(String.format("%.2f", Float.parseFloat(String.valueOf(tempTotal))));
-            if(tempTotal == 0) {
-                shipCost = 0;
-            }
-            shipping.setText(String.format("%.2f", Float.parseFloat(String.valueOf(shipCost))));
-            tax = tempTotal * tax;
-            cTaxes.setText(taxation);
-            taxes.setText(String.format("%.2f", Float.parseFloat(String.valueOf(tax))));
-            totals.setText(String.format("%.2f", Float.parseFloat(String.valueOf(tempTotal + shipCost + tax))));
-            //new returnCartItems().execute();
-            //setTotal(tempTotal);
-            setCartNumber(cartNum);
-            super.onPostExecute(result);
-        }
-    }
-
-    public class refreshCartIcon extends AsyncTask<Void, Void, Void> {
-        String tempUser = user;
-        int cartNum = 0;
-
-        @Override
-        protected void onPreExecute() {
-
-        }
-
-        @Override
-        protected Void doInBackground(Void... arg0) {
-            if(tempUser != null) {
-                try {
-                    Connection conn = ConnectDB.getConnection();
-                    String queryString = "SELECT * FROM Orders WHERE `User_Name` = '" + tempUser + "'";
-
-                    PreparedStatement st = conn.prepareStatement(queryString);
-                    //st.setString(1, tempUser);
-
-                    final ResultSet result = st.executeQuery(queryString);
-
-                    while (result.next()) {
                         cartNum++;
                     }
                 } catch (Exception e) {
@@ -272,13 +235,24 @@ public class Cart extends AppCompatActivity {
         }
 
         protected void onPostExecute(Void result) {
-            getCartItems(cartNum);
-            setCartNumber(cartNum);
+            Log.d(TAG, "Cart size: " + cartNum);
+            //setCartNumber(cartNum);
+            //getCartItems(cartNum);
+            String taxation = "Taxes @ %" + String.valueOf(taxRate);
+            subTotal.setText(String.format("%.2f", Float.parseFloat(String.valueOf(tempTotal))));
+            if(tempTotal == 0) {
+                shipCost = 0;
+            }
+            shipping.setText(String.format("%.2f", Float.parseFloat(String.valueOf(shipCost))));
+            tax = tempTotal * tax;
+            cTaxes.setText(taxation);
+            taxes.setText(String.format("%.2f", Float.parseFloat(String.valueOf(tax))));
+            totals.setText(String.format("%.2f", Float.parseFloat(String.valueOf(tempTotal + shipCost + tax))));
             super.onPostExecute(result);
         }
     }
 
-    public class returnCartItems extends AsyncTask<Void, Void, Void> {
+    public class returnCartItems extends AsyncTask<Void, Void, ArrayList<Product>> {
         String tempUser = user;
         Product product = null;
         ArrayList<Product> tempItems = new ArrayList<>();
@@ -290,11 +264,10 @@ public class Cart extends AppCompatActivity {
         }
 
         @Override
-        protected Void doInBackground(Void... arg0) {
+        protected ArrayList<Product> doInBackground(Void... arg0) {
 
             if(tempUser != null) {
-                if ((getCartNumber() > 0 && cartItems == null) ||
-                        (cartItems.size() != getCartNumber())) {
+
                     try {
                         Connection conn = ConnectDB.getConnection();
                         String queryString = "SELECT * FROM Orders WHERE `User_Name` = '" + tempUser + "'";
@@ -337,18 +310,8 @@ public class Cart extends AppCompatActivity {
                     }
 
                 }
-            }
-            return null;
+            return tempItems;
         }
-
-        protected void onPostExecute(Void result) {
-            setCartItems(tempItems);
-            super.onPostExecute(result);
-        }
-    }
-
-    public void setCartItems(ArrayList<Product> cartItems) {
-        this.cartItems = cartItems;
     }
 
     public class userLog extends AsyncTask<Void, Void, Void> {
@@ -409,9 +372,8 @@ public class Cart extends AppCompatActivity {
         }
     }
 
-    public void getCartItems(int cart) {
+    public void getCartItems(int cart, MenuItem cartMenuItem) {
 
-        MenuItem cartMenuItem = (MenuItem) menu.findItem(R.id.action_cart);
         if (cart == 0) {
             cartMenuItem.setIcon(R.drawable.cart0);
         }
@@ -453,7 +415,7 @@ public class Cart extends AppCompatActivity {
     }
 
     public void setCartNumber(int cartSize) {
-        this.cartSize = cartSize;
+        Cart.cartSize = cartSize;
     }
 
     public static Integer getCartNumber() {

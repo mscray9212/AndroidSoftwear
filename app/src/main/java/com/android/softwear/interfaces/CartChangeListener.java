@@ -5,6 +5,5 @@ package com.android.softwear.interfaces;
  */
 public interface CartChangeListener  {
 
-
     public void onCartChanged();
 }
