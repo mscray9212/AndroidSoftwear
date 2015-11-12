@@ -165,6 +165,7 @@ public class AccountActivity extends AppCompatActivity {
             MainActivity.currentAccount.setEmail("");
             MainActivity.currentAccount.setPassword("");
             MainActivity.currentAccount.setUsername("Guest");
+            setContentView(R.layout.activity_user);//changed from activity_main
             setContentView(R.layout.activity_main);
             setUser(MainActivity.currentAccount);
             new getCartIcon().execute();

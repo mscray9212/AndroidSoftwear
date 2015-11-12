@@ -68,6 +68,9 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback
         cameraSurfaceHolder = cameraSurfaceView.getHolder();
         cameraSurfaceHolder.addCallback(this);
 
+        ImageView imageView = (ImageView) findViewById(R.id.imageView1);
+        Picasso.with(getApplicationContext()).load(wearable).into(imageView);
+
         btnCapture = (Button)findViewById(R.id.takePictureButton);
         btnCapture.setOnClickListener(new OnClickListener()
         {
@@ -127,6 +130,7 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback
             canvas.drawBitmap(bm, 0, 0, null);
 
             Picasso.with(getApplicationContext()).load(wearable).into(new Target() {
+
 
                 @Override
                 public void onPrepareLoad(Drawable arg0) {

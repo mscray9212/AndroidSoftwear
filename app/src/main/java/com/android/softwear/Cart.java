@@ -1,9 +1,6 @@
 package com.android.softwear;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -11,7 +8,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -46,6 +42,7 @@ public class Cart extends AppCompatActivity {
     float shipCost = 15;
     float tax = (float)0.07;
     float taxRate = (float) 0.07;
+    float totalAmount = 0;
     TextView subTotal;
     TextView shipping;
     TextView taxes;
@@ -80,7 +77,18 @@ public class Cart extends AppCompatActivity {
         }
         setCartNumber(cartItems.size());
         Log.d(TAG, "Cart items: " + cartItems.size());
-        //getCartItems(cartItems.size());
+        Button checkoutButton = (Button) findViewById(R.id.checkout_btn);
+        checkoutButton.setOnClickListener(new View.OnClickListener() {
+                                              @Override
+                                              public void onClick(View v) {
+                                                  // added by Brian
+                                                  Intent payPalIntent = new Intent(getApplicationContext(), PayPalActivity.class);
+                                                  Log.d("CART", Float.toString(totalAmount));
+                                                  payPalIntent.putExtra("totalAmount", totalAmount);
+                                                  startActivity(payPalIntent);
+                                              }
+                                          }
+        );
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -245,9 +253,10 @@ public class Cart extends AppCompatActivity {
             }
             shipping.setText(String.format("%.2f", Float.parseFloat(String.valueOf(shipCost))));
             tax = tempTotal * tax;
+            totalAmount = tempTotal + shipCost + tax;
             cTaxes.setText(taxation);
             taxes.setText(String.format("%.2f", Float.parseFloat(String.valueOf(tax))));
-            totals.setText(String.format("%.2f", Float.parseFloat(String.valueOf(tempTotal + shipCost + tax))));
+            totals.setText(String.format("%.2f", Float.parseFloat(String.valueOf(totalAmount))));
             super.onPostExecute(result);
         }
     }

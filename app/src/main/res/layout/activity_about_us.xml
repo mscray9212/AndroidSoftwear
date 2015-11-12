@@ -1,5 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/circuit"
+    tools:context="com.android.softwear.AccountActivity"
+    android:orientation="vertical">
 
-</LinearLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="70dp" >
+
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="1"
+        android:layout_gravity="left|top">
+
+        <!-- Text Color #5e80ab -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical"
+            android:paddingBottom="10dp"
+            android:weightSum="1"
+            android:layout_weight="0.19">
+
+            <LinearLayout
+                android:layout_width="356dp"
+                android:layout_height="50dp"
+                android:background="#5e80ab"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:padding="10dp" >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="left"
+                    android:text="ABOUT US"
+                    android:textColor="#ffffff"
+                    android:textSize="@dimen/text_normal"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="5dp"
+                android:padding="10dp"
+                android:minLines="3"
+                android:background="#ffffff"
+                android:enabled="false"
+                android:textColor="#5F5F5F"
+                android:textColorHint="#bbbbbb"
+                android:text="Developed by a team of computer scientists, Softwear specializes in clothing and accessories with a computer science theme.  "
+                android:checked="false"
+                android:lines="3"
+                android:layout_weight="0.63" />
+
+            <TextView
+                android:id="@+id/editText_lastName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="5dp"
+                android:padding="10dp"
+                android:minLines="1"
+                android:gravity="top"
+                android:background="#ffffff"
+                android:inputType="textPersonName"
+                android:hint="Last Name"
+                android:enabled="false"
+                android:textColor="#5F5F5F"
+                android:textColorHint="#bbbbbb"
+                android:text="Call us: 1-800-555-5555" />
+
+            <TextView
+                android:id="@+id/editText_firstName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:ems="10"
+                android:hint="First Name"
+                android:enabled="false"
+                android:padding="10dp"
+                android:layout_marginTop="5dp"
+                android:background="#ffffff"
+                android:textColor="#5F5F5F"
+                android:textColorHint="#bbbbbb"
+                android:text="Email: customer_service@softwear.com">
+
+                <requestFocus />
+            </TextView>
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="284dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:textColor="#ffffff"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:text="Mailing Address:\n1035 Valley View Dr.\nAtlanta, GA 30303"
+                android:singleLine="false"
+                android:textSize="16sp"
+                android:textColorHint="#bbbbbb" />
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

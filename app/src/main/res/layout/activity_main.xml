@@ -5,21 +5,152 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context=".MainActivity"
-    android:background="#ebebeb">
+    android:background="@drawable/circuit">
 
-    <TextView android:text="@string/hello_guest" android:layout_width="wrap_content"
+    <!-- Container view to scroll horizontally which gives the carousel effect -->
+    <HorizontalScrollView android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView_hello"
-        android:textSize="22dp"
-        android:layout_below="@+id/softwear"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="67dp" />
+        android:scrollbars="none"
+        android:id="@+id/horizontalScrollView"
+        android:layout_below="@+id/featuredProducts"
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/accountButton">
+        <LinearLayout android:id="@+id/carousel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" />
+    </HorizontalScrollView>
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:id="@+id/softwear"
-        android:src="@drawable/softwear"
-        android:layout_alignParentTop="true" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Featured Products"
+        android:id="@+id/featuredProducts"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:autoText="false"
+        android:textColor="#ffffff"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        android:textAlignment="center" />
+
+    <Button
+        android:layout_width="178dp"
+        android:layout_height="120dp"
+        android:text="Register with Softwear"
+        android:id="@+id/registerButton"
+        android:drawableEnd="@android:drawable/checkbox_on_background"
+        android:textAppearance="@android:style/Widget.TextView"
+        android:textColor="#ffffff"
+        android:background="@color/green"
+
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="83dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="140dp"
+        android:layout_height="58dp"
+        android:text="Search"
+        android:id="@+id/searchButton"
+        android:drawableTop="@android:drawable/ic_menu_search"
+        android:textAppearance="@android:style/Widget.TextView"
+        android:textColor="#ffffff"
+        android:background="@color/blue"
+
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:layout_weight="0.05"
+        android:layout_alignTop="@+id/registerButton"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:layout_width="140dp"
+        android:layout_height="58dp"
+        android:text="Contact"
+        android:id="@+id/contactButton"
+        android:drawableTop="@android:drawable/sym_action_email"
+        android:textAppearance="@android:style/Widget.TextView"
+        android:textColor="#ffffff"
+        android:background="@color/gray"
+
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:layout_weight="0.05"
+        android:layout_alignBottom="@+id/registerButton"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:layout_width="410dp"
+        android:layout_height="70dp"
+        android:text="Log In"
+        android:id="@+id/loginButton"
+        android:background="@color/blue"
+        android:layout_below="@+id/space"
+        android:layout_alignParentEnd="true"
+        android:textAppearance="@android:style/Widget.TextView"
+        android:textColor="#ffffff"
+        android:textSize="15dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="400dp"
+        android:layout_height="10dp"
+        android:id="@+id/space"
+        android:layout_below="@+id/contactButton"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="400dp"
+        android:layout_height="10dp"
+        android:id="@+id/space2"
+        android:layout_above="@+id/registerButton"
+        android:layout_alignEnd="@+id/searchButton" />
+
+    <Button
+        android:layout_width="400dp"
+        android:layout_height="40dp"
+        android:text="Account"
+        android:id="@+id/accountButton"
+        android:layout_above="@+id/space2"
+        android:layout_alignEnd="@+id/space2"
+        android:textAppearance="@android:style/Widget.TextView"
+        android:textColor="#ffffff"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:background="@color/gray"
+        />
+
 
 </RelativeLayout>
+
+
+    <!--
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+        android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        tools:context=".MainActivity"
+        android:background="#ebebeb">
+
+        <TextView android:text="@string/hello_guest" android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView_hello"
+            android:textSize="22dp"
+            android:layout_below="@+id/softwear"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="67dp" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:id="@+id/softwear"
+            android:src="@drawable/softwear"
+            android:layout_alignParentTop="true" />
+
+    </RelativeLayout>
+    -->

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="featured_items_array">
+        <item>@drawable/mark3</item>
+        <item>@drawable/mark3</item>
+        <item>@drawable/cart</item>
+        <item>@drawable/cart</item>
+        <item>@drawable/cart</item>
+        <item>@drawable/cart</item>
+        <item>@drawable/cart</item>
+        <item>@drawable/cart</item>
+    </string-array>
+</resources>

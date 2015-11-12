@@ -20,13 +20,20 @@ import com.android.softwear.process.ConnectDB;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
+
+//Willa
+import android.content.res.TypedArray;
+import android.util.DisplayMetrics;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+
 
 public class MainActivity extends AppCompatActivity {
 
-    //ProductQuery products = new ProductQuery();
+    private static final float ITEMS_SHOWN = 3.5F;
+    private LinearLayout CarouselContainer;
+
     static ArrayList<Product> products = new ArrayList<>();
 
     public static Account currentAccount = new Account();
@@ -43,9 +50,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         new retrieveAllProducts().execute();
-        new getCartCount().execute();
-        Log.d(TAG, "Logged in: " + loggedIn);
+        new getCartIcon().execute();
         setContentView(R.layout.activity_main);
+        CarouselContainer = (LinearLayout) findViewById(R.id.carousel);
         //final ActionBar actionBar = getActionBar();
         //actionBar.setDisplayShowTitleEnabled(false);
         //actionBar.show();
@@ -53,7 +60,122 @@ public class MainActivity extends AppCompatActivity {
         if(Search.cartStatus()) {
             new getCartIcon().execute();
         }
+        Button register = (Button)findViewById(R.id.registerButton);
+
+        register.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                setContentView(R.layout.activity_register);
+                Button logB = (Button) findViewById(R.id.logR);
+                logB.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        EditText user_First, user_Last, user_Email, user_Name, user_Pass;
+                        String first, last, email, password, username;
+                        user_First = (EditText) findViewById(R.id.editText_firstName);
+                        user_Last = (EditText) findViewById(R.id.editText_lastName);
+                        user_Email = (EditText) findViewById(R.id.editText_email);
+                        user_Name = (EditText) findViewById(R.id.editText_username);
+                        user_Pass = (EditText) findViewById(R.id.editText_password);
+                        first = user_First.getText().toString();
+                        last = user_Last.getText().toString();
+                        email = user_Email.getText().toString();
+                        password = user_Pass.getText().toString();
+                        username = user_Name.getText().toString();
+                        currentAccount.setFirst_name(first);
+                        currentAccount.setLast_name(last);
+                        currentAccount.setEmail(email);
+                        currentAccount.setPassword(password);
+                        currentAccount.setUsername(username);
+                        new userReg().execute();
+                    }
+                });
+            }
+        });
+        Button login = (Button)findViewById(R.id.loginButton);
+
+        login.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                setContentView(R.layout.activity_login);
+                Button logB = (Button) findViewById(R.id.logB);
+                logB.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        EditText user_Name, user_Pass;
+                        String password, username;
+                        user_Name = (EditText) findViewById(R.id.editText_username);
+                        user_Pass = (EditText) findViewById(R.id.editText_password);
+                        password = user_Pass.getText().toString();
+                        username = user_Name.getText().toString();
+                        currentAccount.setPassword(password);
+                        currentAccount.setUsername(username);
+                        new userLog().execute();
+                    }
+                });
+            }
+
+        });
+        Button search = (Button)findViewById(R.id.searchButton);
+
+        search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, Search.class));
+
+            }
+        });
+        Button account = (Button)findViewById(R.id.accountButton);
+
+        account.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, AccountActivity.class));
+            }
+        });
+        Button contact = (Button)findViewById(R.id.contactButton);
+
+        contact.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setContentView(R.layout.activity_about_us);
+            }
+        });
     }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+
+        // Compute the width of a carousel item based on the screen width and number of initial items.
+        final DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        final int imageWidth = (int) (displayMetrics.widthPixels / ITEMS_SHOWN);
+
+        // Get the array of puppy resources
+        final TypedArray featuredProducts = getResources().obtainTypedArray(R.array.featured_items_array);
+
+        // Populate the carousel with items
+        ImageView imageItem;
+        for (int i = 0 ; i < featuredProducts.length() ; ++i) {
+            // Create new ImageView
+            imageItem = new ImageView(this);
+
+            // Set the shadow background
+            imageItem.setBackgroundResource(R.drawable.shadow);
+
+            // Set the image view resource
+            imageItem.setImageResource(featuredProducts.getResourceId(i, -1));
+
+            // Set the size of the image view to the previously computed value
+            imageItem.setLayoutParams(new LinearLayout.LayoutParams(imageWidth, imageWidth));
+
+            /// Add image view to the carousel container
+            CarouselContainer.addView(imageItem);
+        }
+    }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -197,7 +319,7 @@ public class MainActivity extends AppCompatActivity {
 
         protected void onPostExecute(Void result) {
             setUser(currentAccount);
-            getData.setText(queryResult);
+            //FgetData.setText(queryResult);
             setLog(true);
             new getCartIcon().execute();
             super.onPostExecute(result);
@@ -228,7 +350,7 @@ public class MainActivity extends AppCompatActivity {
 
         protected void onPostExecute(Void result) {
             setUser(currentAccount);
-            getData.setText(queryResult);
+            //getData.setText(queryResult);
             setLog(true);
             super.onPostExecute(result);
         }
@@ -304,17 +426,29 @@ public class MainActivity extends AppCompatActivity {
 
     public void setUser(Account acct) {
         String aloha;
-        if(acct.getFirst_name() != null) {
+        if(acct.getFirst_name() != null && acct.getFirst_name() != "Guest") {
             aloha = "Welcome, " + acct.getFirst_name() + "!";
+            setContentView(R.layout.activity_user);
+            TextView textName = (TextView) findViewById(R.id.textView_hello);
+            textName.setTextSize(25);
+            textName.setText(aloha);
+            setTitle(acct.getFirst_name());
         }
         else {
+       /* If want to have logout go to login screen
+       setContentView(R.layout.activity_login);
+        setTitle("Hello, Guest");
+        */
             aloha = "Welcome, Guest!";
+            setContentView(R.layout.activity_user);
+            TextView textName = (TextView) findViewById(R.id.textView_hello);
+            textName.setTextSize(25);
+            textName.setText(aloha);
+            setTitle("Hello, Guest");
+
         }
-        setContentView(R.layout.activity_main);
-        TextView textName = (TextView) findViewById(R.id.textView_hello);
-        textName.setTextSize(22);
-        textName.setText(aloha);
     }
+
 
 
 
