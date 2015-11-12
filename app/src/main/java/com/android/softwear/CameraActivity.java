@@ -152,8 +152,15 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback
                 }
             });
 
-            // **** HEREEEE needs refinement  ****//
-            drawable.setBounds(80, 100, drawable.getIntrinsicWidth()+50, drawable.getIntrinsicHeight()+70);
+            int wdth = 600;
+            int hght = 350;
+            int x = 100;
+            int y = 400;
+
+            // **** HEREEEE needs refinement  ***//
+            drawable.setBounds(x, y, wdth + x , hght + y);
+
+
 
 
             drawable.draw(canvas);
@@ -257,4 +264,8 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback
     public Drawable getDrawable() {
         return drawable;
     }
+
+
+
+
 }
