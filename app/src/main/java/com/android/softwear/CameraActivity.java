@@ -1,38 +1,42 @@
 package com.android.softwear;
 
-        import java.io.File;
-        import java.io.FileNotFoundException;
-        import java.io.FileOutputStream;
-        import java.io.IOException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
-        import android.app.Activity;
-        import android.content.Intent;
-        import android.graphics.Bitmap;
-        import android.graphics.BitmapFactory;
-        import android.graphics.Canvas;
-        import android.graphics.PixelFormat;
-        import android.graphics.drawable.Drawable;
-        import android.hardware.Camera;
-        import android.hardware.Camera.PictureCallback;
-        import android.hardware.Camera.ShutterCallback;
-        import android.net.Uri;
-        import android.os.Bundle;
-        import android.os.Environment;
-        import android.util.Log;
-        import android.view.SurfaceHolder;
-        import android.view.SurfaceView;
-        import android.view.View;
-        import android.view.Window;
-        import android.view.WindowManager;
-        import android.view.View.OnClickListener;
-        import android.widget.Button;
-        import android.widget.ImageView;
-        import android.widget.RelativeLayout;
-        import android.widget.Toast;
-        import android.graphics.Matrix;
+import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
+import android.hardware.Camera;
+import android.hardware.Camera.PictureCallback;
+import android.hardware.Camera.ShutterCallback;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
+import android.graphics.Matrix;
+import android.graphics.Point;
+import android.view.Display;
 
-        import com.squareup.picasso.Picasso;
-        import com.squareup.picasso.Target;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
+
+
 
 
 public class CameraActivity extends Activity implements SurfaceHolder.Callback
@@ -71,6 +75,7 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback
         ImageView imageView = (ImageView) findViewById(R.id.imageView1);
         Picasso.with(getApplicationContext()).load(wearable).into(imageView);
 
+
         btnCapture = (Button)findViewById(R.id.takePictureButton);
         btnCapture.setOnClickListener(new OnClickListener()
         {
@@ -104,31 +109,9 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback
     PictureCallback cameraPictureCallbackJpeg = new PictureCallback()
     {
         @Override
-
-        //Start Here
         public void onPictureTaken(byte[] data, Camera camera)
         {
             // TODO Auto-generated method stub
-
-
-            int screenWidth = getResources().getDisplayMetrics().widthPixels;
-            int screenHeight = getResources().getDisplayMetrics().heightPixels;
-            Bitmap bm = BitmapFactory.decodeByteArray(data, 0, (data != null) ? data.length : 0);
-
-            // Notice that width and height are reversed
-            Bitmap scaled = Bitmap.createScaledBitmap(bm, screenHeight, screenWidth, true);
-            int w = scaled.getWidth();
-            int h = scaled.getHeight();
-            // Setting post rotate to 90
-            Matrix mtx = new Matrix();
-            mtx.postRotate(270);
-            // Rotating Bitmap
-            bm = Bitmap.createBitmap(scaled, 0, 0, w, h, mtx, true);
-
-
-            Canvas canvas = new Canvas(bm);
-            canvas.drawBitmap(bm, 0, 0, null);
-
             Picasso.with(getApplicationContext()).load(wearable).into(new Target() {
 
 
@@ -152,10 +135,37 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback
                 }
             });
 
-            // **** HEREEEE needs refinement  ****//
-            drawable.setBounds(80, 100, drawable.getIntrinsicWidth()+50, drawable.getIntrinsicHeight()+70);
+            int screenWidth = getResources().getDisplayMetrics().widthPixels;
+            int screenHeight = getResources().getDisplayMetrics().heightPixels;
+            Bitmap bm = BitmapFactory.decodeByteArray(data, 0, (data != null) ? data.length : 0);
+
+            // Notice that width and height are reversed
+            Bitmap scaled = Bitmap.createScaledBitmap(bm, screenHeight, screenWidth, true);
+            int w = scaled.getWidth();
+            int h = scaled.getHeight();
+            // Setting post rotate to 90
+            Matrix mtx = new Matrix();
+            mtx.postRotate(270);
+            // Rotating Bitmap
+            bm = Bitmap.createBitmap(scaled, 0, 0, w, h, mtx, true);
 
 
+            Display display = getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            int width = size.x ;
+            int height = size.y;
+
+            int wdth = 600;
+            int hght = 350;
+            int x = (width - wdth) / 2 ;
+            int y = (height - hght) / 2;
+
+            Canvas canvas = new Canvas(bm);
+            canvas.drawBitmap(bm, 0, 0, null);
+
+            // **** HEREEEE needs refinement  ***//
+            drawable.setBounds(x, y, wdth + x , hght + y);
             drawable.draw(canvas);
 
             File storagePath = new File(Environment.getExternalStorageDirectory() + "/Pictures/SoftWear/");
@@ -166,7 +176,6 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback
             try {
                 FileOutputStream out = new FileOutputStream(myImage);
                 bm.compress(Bitmap.CompressFormat.JPEG, 80, out);
-                out.flush();
                 out.close();
             } catch(FileNotFoundException e) {
                 Log.d("In Saving File", e + "");
@@ -174,8 +183,8 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback
                 Log.d("In Saving File", e + "");
             }
 
-            camera.startPreview();
 
+            camera.startPreview();
             scaled.recycle();
 
             Intent intent = new Intent();
@@ -197,9 +206,6 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback
             previewing = false;
 
         } try {
-            Camera.Parameters parameters = camera.getParameters();
-            parameters.setPreviewSize(640, 480);
-            parameters.setPictureSize(640, 480);
 
             camera.setDisplayOrientation(90);
             camera.setPreviewDisplay(cameraSurfaceHolder);
@@ -257,4 +263,8 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback
     public Drawable getDrawable() {
         return drawable;
     }
+
+
+
+
 }

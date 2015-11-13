@@ -16,4 +16,93 @@
         android:textColor="#ffffff"
         android:textStyle="bold" />
 
+    <Button
+        android:layout_width="178dp"
+        android:layout_height="120dp"
+        android:text="Register with\n Softwear"
+        android:id="@+id/registerButton"
+        android:drawableEnd="@android:drawable/checkbox_on_background"
+        android:textAppearance="@android:style/Widget.TextView"
+        android:textColor="#ffffff"
+        android:background="@color/green"
+
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="83dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="140dp"
+        android:layout_height="58dp"
+        android:text="Search"
+        android:id="@+id/searchButton"
+        android:drawableTop="@android:drawable/ic_menu_search"
+        android:textAppearance="@android:style/Widget.TextView"
+        android:textColor="#ffffff"
+        android:background="@color/blue"
+
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:layout_weight="0.05"
+        android:layout_alignTop="@+id/registerButton"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:layout_width="140dp"
+        android:layout_height="58dp"
+        android:text="Contact"
+        android:id="@+id/contactButton"
+        android:drawableTop="@android:drawable/sym_action_email"
+        android:textAppearance="@android:style/Widget.TextView"
+        android:textColor="#ffffff"
+        android:background="@color/gray"
+
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:layout_weight="0.05"
+        android:layout_alignBottom="@+id/registerButton"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:layout_width="410dp"
+        android:layout_height="70dp"
+        android:text="Log In"
+        android:id="@+id/loginButton"
+        android:background="@color/blue"
+        android:layout_below="@+id/space"
+        android:layout_alignParentEnd="true"
+        android:textAppearance="@android:style/Widget.TextView"
+        android:textColor="#ffffff"
+        android:textSize="15dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="400dp"
+        android:layout_height="10dp"
+        android:id="@+id/space"
+        android:layout_below="@+id/contactButton"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="400dp"
+        android:layout_height="10dp"
+        android:id="@+id/space2"
+        android:layout_above="@+id/registerButton"
+        android:layout_alignEnd="@+id/searchButton" />
+
+    <Button
+        android:layout_width="400dp"
+        android:layout_height="40dp"
+        android:text="Account"
+        android:id="@+id/accountButton"
+        android:layout_above="@+id/space2"
+        android:layout_alignEnd="@+id/space2"
+        android:textAppearance="@android:style/Widget.TextView"
+        android:textColor="#ffffff"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:background="@color/gray"
+        />
+
 </RelativeLayout>

@@ -99,36 +99,11 @@ public class Search extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 
                 try {
-
-                    setContentView(R.layout.activity_product_view);
-                    //vi = inflater.inflate(R.layout.activity_product_view, parent, false);
-                    ProductsAdapter.ViewHolder holder = new ProductsAdapter.ViewHolder();
-                    holder.product_name = (TextView) findViewById(R.id.product_name);
-                    holder.product_dept = (TextView) findViewById(R.id.product_dept);
-                    holder.product_desc = (TextView) findViewById(R.id.product_desc);
-                    holder.product_price = (TextView) findViewById(R.id.product_price);
-                    holder.product_qty = (TextView) findViewById(R.id.product_qty);
-                    holder.product_img = (ImageView) findViewById(R.id.icon);
                     URI = "http://www.michaelscray.com/Softwear/graphics/";
                     URI_W = "http://www.michaelscray.com/Softwear/graphics/wearables/";
-
-                    String dept = "Dept: ";
-                    String money = "$";
-                    String qty = "Qty: ";
-
-                    //final Integer tempSKU = products.get(position).getSKU();
-                    //final float tempPrice = products.get(position).getPrice();
-
                     URI += products.get(position).getProduct_img();
                     URI_W += products.get(position).getProduct_img();
-                    Uri uris = Uri.parse(URI + products.get(position).getProduct_img());
-                    URI uri = java.net.URI.create(URI);
-                    holder.product_name.setText(products.get(position).getProduct_name());
-                    holder.product_desc.setText(products.get(position).getProduct_desc());
-                    holder.product_dept.setText(dept + products.get(position).getProduct_dept());
-                    holder.product_price.setText(money + String.valueOf(products.get(position).getPrice()));
-                    holder.product_qty.setText(qty + String.valueOf(products.get(position).getProduct_qty()));
-                    Picasso.with(getApplicationContext()).load(URI).error(R.mipmap.ic_launcher).into(holder.product_img);
+
                     String test = URI_W.substring(0, URI_W.lastIndexOf('.')) + ".png";
                     //new checkFileExists().execute(URI);
                     //file1 = getTruth();
@@ -137,44 +112,19 @@ public class Search extends AppCompatActivity {
                     //Example: http://www.michaelscray.com/Softwear/graphics/wearables/sampleTwo.png
                     //new checkFileExists().execute(URI);
                     boolean truth = new checkFileExists().execute(test).get().booleanValue();
+                    Intent productIntent = new Intent();
+                    productIntent.setClass(Search.this, ProductActivity.class);
+                    productIntent.putExtra("SKU", products.get(position).getSKU());
+                    productIntent.putExtra("URI", URI);
+                    productIntent.putExtra("truth", truth);
+                    productIntent.putExtra("Name", products.get(position).getProduct_name());
+                    productIntent.putExtra("Desc", products.get(position).getProduct_desc());
+                    productIntent.putExtra("Dept", products.get(position).getProduct_dept());
+                    productIntent.putExtra("Price", products.get(position).getPrice());
+                    productIntent.putExtra("Qty", products.get(position).getProduct_qty());
+                    productIntent.putExtra("PNG", test);
                     Log.d(TAG, "Product wearable: " + truth);
-                    if (truth) {
-                        Button tryMe = (Button) findViewById(R.id.try_btn);
-                        tryMe.setVisibility(View.VISIBLE);
-                        tryMe.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                String png = URI_W.substring(0, URI_W.lastIndexOf('.')) + ".png";
-                                Intent intent = new Intent(Search.this, CameraActivity.class);
-                                intent.putExtra("Image", png);
-                                //Log.d(TAG, "wearable: " + URI);
-                                startActivity(intent);
-                            }
-                        });
-                    }
-
-                    Button addToCart = (Button) findViewById(R.id.cart_btn);
-                    setSKU(products.get(position).getSKU());
-                    setPrice(products.get(position).getPrice());
-                    addToCart.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            /*  Get User_Name, SKU, Price, and Shipped   */
-                            user = MainActivity.currentAccount.getUsername();
-                            SKU = getSKU();
-                            //String desc = products.get(getPos()).getProduct_desc();
-                            //String dept = products.get(getPos()).getProduct_dept();
-                            price = getPrice();
-                            //int qty = products.get(getPos()).getProduct_qty();
-                            //String img = products.get(getPos()).getProduct_img();
-                            setUser(user);
-                            setSKU(SKU);
-                            setPrice(price);
-                            updatedCart = true;
-                            //cartChangeListener.onCartChanged();
-                            new addItemToCart().execute();
-                        }
-                    });
+                    startActivity(productIntent);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -302,7 +252,7 @@ public class Search extends AppCompatActivity {
 
                     try {
                         //int positions = (Integer) v.getTag();
-                        Product productSearch = (Product)parent.getItemAtPosition(position);
+                        Product productSearch = (Product) parent.getItemAtPosition(position);
                         setContentView(R.layout.activity_product_view);
                         try {
                             getActionBar().setDisplayShowHomeEnabled(false);
@@ -311,66 +261,32 @@ public class Search extends AppCompatActivity {
                         }
 
                         Log.d(TAG, "Item: " + productSearch.getProduct_name());
-                        ProductsAdapter.ViewHolder holder = new ProductsAdapter.ViewHolder();
-                        holder.product_name = (TextView) findViewById(R.id.product_name);
-                        holder.product_dept = (TextView) findViewById(R.id.product_dept);
-                        holder.product_desc = (TextView) findViewById(R.id.product_desc);
-                        holder.product_price = (TextView) findViewById(R.id.product_price);
-                        holder.product_qty = (TextView) findViewById(R.id.product_qty);
-                        holder.product_img = (ImageView) findViewById(R.id.icon);
-
                         URI = "http://www.michaelscray.com/Softwear/graphics/";
-                        String dept = "Dept: ";
-                        String money = "$";
-                        String qty = "Qty: ";
+                        URI_W = "http://www.michaelscray.com/Softwear/graphics/wearables/";
                         URI += productSearch.getProduct_img();
-                        Uri uris = Uri.parse(URI + productSearch.getProduct_img());
-                        URI uri = java.net.URI.create(URI);
-                        holder.product_name.setText(productSearch.getProduct_name());
-                        holder.product_desc.setText(productSearch.getProduct_desc());
-                        holder.product_dept.setText(dept + productSearch.getProduct_dept());
-                        holder.product_price.setText(money + String.valueOf(productSearch.getPrice()));
-                        holder.product_qty.setText(qty + String.valueOf(productSearch.getProduct_qty()));
-                        Picasso.with(getApplicationContext()).load(URI).error(R.mipmap.ic_launcher).into(holder.product_img);
-                        setSKU(productSearch.getSKU());
-                        setPrice(productSearch.getPrice());
-                        Button addToCart = (Button) findViewById(R.id.cart_btn);
-                        addToCart.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                /*  Get User_Name, SKU, Price, and Shipped   */
-                                user = MainActivity.currentAccount.getUsername();
-                                SKU = getSKU();
-                                price = getPrice();
-                                setUser(user);
-                                setSKU(SKU);
-                                setPrice(price);
-                                updatedCart = true;
-                                new addItemToCart().execute();
-                                Log.d(TAG, user + ", added item: " + String.valueOf(SKU) + ", for $" + String.valueOf(price));
-                                /*
-                                View parentRow = (View) v.getParent();
-                                ListView listViewItem = (ListView) parentRow.getParent();
-                                final int position = listViewItem.getPositionForView(parentRow);
+                        URI_W += productSearch.getProduct_img();
 
-                                int position=(Integer)v.getTag();
-                                /*  Get User_Name, SKU, Price, and Shipped
-                                user = MainActivity.currentAccount.getUsername();
-                                SKU = products.get(position).getSKU();
-                                //String desc = products.get(position).getProduct_desc();
-                                //String dept = products.get(position).getProduct_dept();
-                                price = products.get(position).getPrice();
-                                //int qty = products.get(position).getProduct_qty();
-                                //String img = products.get(position).getProduct_img();
-                                setUser(user);
-                                setSKU(SKU);
-                                setPrice(price);
-                                Log.d(TAG, user + ", added item: " + String.valueOf(SKU) + ", for $" + String.valueOf(price));
-                                updatedCart = true;
-                                new addItemToCart().execute();
-                                */
-                            }
-                        });
+                        String test = URI_W.substring(0, URI_W.lastIndexOf('.')) + ".png";
+                        //new checkFileExists().execute(URI);
+                        //file1 = getTruth();
+                        Log.d(TAG, "JPG: " + URI);
+                        Log.d(TAG, "PNG: " + test);
+                        //Example: http://www.michaelscray.com/Softwear/graphics/wearables/sampleTwo.png
+                        //new checkFileExists().execute(URI);
+                        boolean truth = new checkFileExists().execute(test).get().booleanValue();
+                        Intent searchIntent = new Intent();
+                        searchIntent.setClass(Search.this, ProductActivity.class);
+                        searchIntent.putExtra("SKU", productSearch.getSKU());
+                        searchIntent.putExtra("URI", URI);
+                        searchIntent.putExtra("truth", truth);
+                        searchIntent.putExtra("Name", productSearch.getProduct_name());
+                        searchIntent.putExtra("Desc", productSearch.getProduct_desc());
+                        searchIntent.putExtra("Dept", productSearch.getProduct_dept());
+                        searchIntent.putExtra("Price", productSearch.getPrice());
+                        searchIntent.putExtra("Qty", productSearch.getProduct_qty());
+                        searchIntent.putExtra("PNG", test);
+                        Log.d(TAG, "Product wearable: " + truth);
+                        startActivity(searchIntent);
 
                     } catch (Exception e) {
                         e.printStackTrace();

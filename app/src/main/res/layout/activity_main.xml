@@ -12,11 +12,14 @@
         android:layout_height="wrap_content"
         android:scrollbars="none"
         android:id="@+id/horizontalScrollView"
+        android:background="@drawable/bg"
         android:layout_below="@+id/featuredProducts"
+        android:paddingBottom="20dp"
+        android:paddingTop="20dp"
         android:layout_alignParentStart="true"
-        android:layout_above="@+id/accountButton">
+        android:layout_above="@+id/button">
         <LinearLayout android:id="@+id/carousel"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal" />
     </HorizontalScrollView>
@@ -31,13 +34,12 @@
         android:autoText="false"
         android:textColor="#ffffff"
         android:textStyle="bold"
-        android:textSize="15sp"
-        android:textAlignment="center" />
+        android:textSize="15sp" />
 
     <Button
         android:layout_width="178dp"
         android:layout_height="120dp"
-        android:text="Register with Softwear"
+        android:text="Register with\n Softwear"
         android:id="@+id/registerButton"
         android:drawableEnd="@android:drawable/checkbox_on_background"
         android:textAppearance="@android:style/Widget.TextView"
@@ -122,6 +124,20 @@
         android:textStyle="bold"
         android:background="@color/gray"
         />
+
+    <Button
+        android:layout_width="400dp"
+        android:layout_height="40dp"
+        android:text="Account"
+        android:id="@+id/button"
+        android:visibility="invisible"
+        android:textAppearance="@android:style/Widget.TextView"
+        android:textColor="#ffffff"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:background="@color/gray"
+        android:layout_above="@+id/accountButton"
+        android:layout_centerHorizontal="true" />
 
 
 </RelativeLayout>

@@ -5,12 +5,14 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/softwear"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme"
+        android:largeHeap="true">
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -78,6 +80,15 @@
             android:label="@string/action_account" >
             <intent-filter>
                 <action android:name="com.android.softwear.AccountActivity" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ProductActivity"
+            android:label="@string/action_product" >
+            <intent-filter>
+                <action android:name="com.android.softwear.ProductActivity" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

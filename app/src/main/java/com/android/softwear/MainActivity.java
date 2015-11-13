@@ -31,7 +31,7 @@ import android.widget.LinearLayout;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final float ITEMS_SHOWN = 3.5F;
+    private static final int ITEMS_SHOWN = 2;
     private LinearLayout CarouselContainer;
 
     static ArrayList<Product> products = new ArrayList<>();
@@ -418,7 +418,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(Void result) {
-            getCartItems(cartNum);
+            if(cartNum > 0) {
+                getCartItems(cartNum);
+            }
             super.onPostExecute(result);
         }
     }
@@ -433,6 +435,92 @@ public class MainActivity extends AppCompatActivity {
             textName.setTextSize(25);
             textName.setText(aloha);
             setTitle(acct.getFirst_name());
+
+            if(Search.cartStatus()) {
+                new getCartIcon().execute();
+            }
+            Button register = (Button)findViewById(R.id.registerButton);
+
+            register.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    setContentView(R.layout.activity_register);
+                    Button logB = (Button) findViewById(R.id.logR);
+                    logB.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            EditText user_First, user_Last, user_Email, user_Name, user_Pass;
+                            String first, last, email, password, username;
+                            user_First = (EditText) findViewById(R.id.editText_firstName);
+                            user_Last = (EditText) findViewById(R.id.editText_lastName);
+                            user_Email = (EditText) findViewById(R.id.editText_email);
+                            user_Name = (EditText) findViewById(R.id.editText_username);
+                            user_Pass = (EditText) findViewById(R.id.editText_password);
+                            first = user_First.getText().toString();
+                            last = user_Last.getText().toString();
+                            email = user_Email.getText().toString();
+                            password = user_Pass.getText().toString();
+                            username = user_Name.getText().toString();
+                            currentAccount.setFirst_name(first);
+                            currentAccount.setLast_name(last);
+                            currentAccount.setEmail(email);
+                            currentAccount.setPassword(password);
+                            currentAccount.setUsername(username);
+                            new userReg().execute();
+                        }
+                    });
+                }
+            });
+            Button login = (Button)findViewById(R.id.loginButton);
+
+            login.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    setContentView(R.layout.activity_login);
+                    Button logB = (Button) findViewById(R.id.logB);
+                    logB.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            EditText user_Name, user_Pass;
+                            String password, username;
+                            user_Name = (EditText) findViewById(R.id.editText_username);
+                            user_Pass = (EditText) findViewById(R.id.editText_password);
+                            password = user_Pass.getText().toString();
+                            username = user_Name.getText().toString();
+                            currentAccount.setPassword(password);
+                            currentAccount.setUsername(username);
+                            new userLog().execute();
+                        }
+                    });
+                }
+
+            });
+            Button search = (Button)findViewById(R.id.searchButton);
+
+            search.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(MainActivity.this, Search.class));
+
+                }
+            });
+            Button account = (Button)findViewById(R.id.accountButton);
+
+            account.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(MainActivity.this, AccountActivity.class));
+                }
+            });
+            Button contact = (Button)findViewById(R.id.contactButton);
+
+            contact.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    setContentView(R.layout.activity_about_us);
+                }
+            });
+
         }
         else {
        /* If want to have logout go to login screen

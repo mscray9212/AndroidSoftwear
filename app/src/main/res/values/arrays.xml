@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="featured_items_array">
-        <item>@drawable/mark3</item>
-        <item>@drawable/mark3</item>
-        <item>@drawable/cart</item>
-        <item>@drawable/cart</item>
-        <item>@drawable/cart</item>
-        <item>@drawable/cart</item>
-        <item>@drawable/cart</item>
-        <item>@drawable/cart</item>
+        <item>@drawable/noplacelikehome</item>
+        <item>@drawable/ibyte</item>
+        <item>@drawable/codebro</item>
+        <item>@drawable/tcpbodysuit</item>
+        <item>@drawable/ninja</item>
+        <item>@drawable/brainshirt</item>
+        <item>@drawable/captainamericabackpack</item>
+        <item>@drawable/spelling</item>
     </string-array>
 </resources>
