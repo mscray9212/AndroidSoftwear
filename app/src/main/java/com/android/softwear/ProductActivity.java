@@ -78,6 +78,7 @@ public class ProductActivity extends AppCompatActivity {
             Picasso.with(getApplicationContext()).load(extras.getString("URI")).error(R.mipmap.ic_launcher).into(holder.product_img);
             truth = extras.getBoolean("truth");
             setSKU(extras.getInt("SKU"));
+            setPrice(extras.getFloat("Price"));
 
                 if (truth) {
                     Button tryMe = (Button) findViewById(R.id.try_btn);

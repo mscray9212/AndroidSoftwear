@@ -1,6 +1,7 @@
 package com.android.softwear;
 
 import android.content.Intent;
+import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -62,15 +63,18 @@ public class Cart extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         listView = (ListView) findViewById(R.id.list_cart_view);
         adaptCart = new ProductAdapter(Cart.this, 0, cartItems);
         adaptCart.notifyDataSetChanged();
         listView.setAdapter(adaptCart);
         try {
             Intent intent = getIntent();
-            update = intent.getExtras().getBoolean("update");
-            if(update) {
-                updateCart();
+            if(intent != null) {
+                update = intent.getExtras().getBoolean("update");
+                if (update) {
+                    updateCart();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -191,7 +195,7 @@ public class Cart extends AppCompatActivity {
     }
 
     public void updateCart() {
-
+        new getCartIcon().execute();
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -204,6 +208,7 @@ public class Cart extends AppCompatActivity {
         String tempUser = user;
         int cartNum = 0;
         float tempTotal;
+        float total;
 
         @Override
         protected void onPreExecute() {
@@ -212,6 +217,7 @@ public class Cart extends AppCompatActivity {
             totals = (TextView) findViewById(R.id.textView_total);
             taxes = (TextView) findViewById(R.id.textView_taxes);
             cTaxes = (TextView) findViewById(R.id.current_taxes);
+            Log.d(TAG, "onPreExecute() for getCartIcon");
 
         }
 
@@ -221,7 +227,7 @@ public class Cart extends AppCompatActivity {
                 try {
                     Connection conn = ConnectDB.getConnection();
                     String queryString = "SELECT * FROM Orders WHERE `User_Name` = '" + tempUser + "'";
-
+                    Log.d(TAG, queryString);
                     PreparedStatement st = conn.prepareStatement(queryString);
                     //st.setString(1, tempUser);
 
@@ -233,7 +239,8 @@ public class Cart extends AppCompatActivity {
                         } catch(SQLException e) {
                             e.printStackTrace();
                         }
-                        cartNum++;
+                        //cartNum++;
+                        setTotalAmount(tempTotal);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -244,19 +251,20 @@ public class Cart extends AppCompatActivity {
 
         protected void onPostExecute(Void result) {
             Log.d(TAG, "Cart size: " + cartNum);
-            //setCartNumber(cartNum);
-            //getCartItems(cartNum);
+            Log.d(TAG, "tempTotal: " + getTotalAmount());
             String taxation = "Taxes @ %" + String.valueOf(taxRate);
-            subTotal.setText(String.format("%.2f", Float.parseFloat(String.valueOf(tempTotal))));
+            subTotal.setText(String.format("%.2f", Float.parseFloat(String.valueOf(getTotalAmount()))));
             if(tempTotal == 0) {
                 shipCost = 0;
+                taxation = "Taxes";
             }
-            shipping.setText(String.format("%.2f", Float.parseFloat(String.valueOf(shipCost))));
-            tax = tempTotal * tax;
-            totalAmount = tempTotal + shipCost + tax;
             cTaxes.setText(taxation);
+            shipping.setText(String.format("%.2f", Float.parseFloat(String.valueOf(shipCost))));
+            tax = getTotalAmount() * tax;
             taxes.setText(String.format("%.2f", Float.parseFloat(String.valueOf(tax))));
-            totals.setText(String.format("%.2f", Float.parseFloat(String.valueOf(totalAmount))));
+            total = getTotalAmount() + shipCost + tax;
+            totals.setText(String.format("%.2f", Float.parseFloat(String.valueOf(total))));
+            setTotalAmount(total);
             super.onPostExecute(result);
         }
     }
@@ -433,5 +441,13 @@ public class Cart extends AppCompatActivity {
 
     public static ArrayList<Product> getCartList() {
         return cartItems;
+    }
+
+    public void setTotalAmount(Float totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public Float getTotalAmount() {
+        return totalAmount;
     }
 }

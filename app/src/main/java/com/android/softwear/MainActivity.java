@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private String user;
     static int cartNum;
     static boolean loggedIn = false;
+    MenuItem cartMenuItem;
     String TAG = "";
     Menu menu;
 
@@ -181,6 +182,10 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        int items = getCartNumber();
+        cartMenuItem = menu.findItem(R.id.action_cart);
+        getCartItems(items, cartMenuItem);
+        Log.d(TAG, "getCartNumber() = " + items);
         this.menu = menu;
         return true;
     }
@@ -360,9 +365,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
     }
 
-    public void getCartItems(int cart) {
+    public void getCartItems(int cart, MenuItem cartMenuItem) {
 
-        MenuItem cartMenuItem = (MenuItem) menu.findItem(R.id.action_cart);
         if (cart == 0) {
             cartMenuItem.setIcon(R.drawable.cart0);
         }
@@ -419,7 +423,7 @@ public class MainActivity extends AppCompatActivity {
 
         protected void onPostExecute(Void result) {
             if(cartNum > 0) {
-                getCartItems(cartNum);
+                getCartItems(cartNum, cartMenuItem);
             }
             super.onPostExecute(result);
         }
