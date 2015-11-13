@@ -72,8 +72,29 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback
         cameraSurfaceHolder = cameraSurfaceView.getHolder();
         cameraSurfaceHolder.addCallback(this);
 
-        ImageView imageView = (ImageView) findViewById(R.id.imageView1);
-        Picasso.with(getApplicationContext()).load(wearable).into(imageView);
+
+        Picasso.with(getApplicationContext()).load(wearable).into(new Target() {
+
+
+            @Override
+            public void onPrepareLoad(Drawable arg0) {
+
+            }
+
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom arg1) {
+                // TODO Create your drawable from bitmap and append where you like.
+                ImageView imageView = (ImageView) findViewById(R.id.imageView1);
+                imageView.setImageBitmap(bitmap);
+                Drawable dynamicImage = imageView.getDrawable();
+                setDrawable(dynamicImage);
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable arg0) {
+
+            }
+        });
 
 
         btnCapture = (Button)findViewById(R.id.takePictureButton);
@@ -84,6 +105,7 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback
             {
                 // TODO Auto-generated method stub
                 camera.takePicture(cameraShutterCallback, cameraPictureCallbackRaw, cameraPictureCallbackJpeg);
+
             }
         });
     }
@@ -103,37 +125,19 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback
         public void onPictureTaken(byte[] data, Camera camera)
         {
             // TODO Auto-generated method stub
+
+
         }
     };
 
     PictureCallback cameraPictureCallbackJpeg = new PictureCallback()
     {
         @Override
-        public void onPictureTaken(byte[] data, Camera camera)
+        public void onPictureTaken(byte[] data, Camera cam)
         {
-            // TODO Auto-generated method stub
-            Picasso.with(getApplicationContext()).load(wearable).into(new Target() {
 
-
-                @Override
-                public void onPrepareLoad(Drawable arg0) {
-
-                }
-
-                @Override
-                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom arg1) {
-                    // TODO Create your drawable from bitmap and append where you like.
-                    ImageView imageView = (ImageView) findViewById(R.id.imageView1);
-                    imageView.setImageBitmap(bitmap);
-                    Drawable dynamicImage = imageView.getDrawable();
-                    setDrawable(dynamicImage);
-                }
-
-                @Override
-                public void onBitmapFailed(Drawable arg0) {
-
-                }
-            });
+            camera.stopPreview();
+            previewing = false;
 
             int screenWidth = getResources().getDisplayMetrics().widthPixels;
             int screenHeight = getResources().getDisplayMetrics().heightPixels;
@@ -164,7 +168,7 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback
             Canvas canvas = new Canvas(bm);
             canvas.drawBitmap(bm, 0, 0, null);
 
-            // **** HEREEEE needs refinement  ***//
+
             drawable.setBounds(x, y, wdth + x , hght + y);
             drawable.draw(canvas);
 
@@ -183,10 +187,6 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback
                 Log.d("In Saving File", e + "");
             }
 
-
-            camera.startPreview();
-            scaled.recycle();
-
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_VIEW);
 
@@ -200,23 +200,30 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback
     public void surfaceChanged(SurfaceHolder holder,int format, int width, int height) {
         // TODO Auto-generated method stub
 
+
         if(previewing) {
+
 
             camera.stopPreview();
             previewing = false;
 
-        } try {
 
-            camera.setDisplayOrientation(90);
-            camera.setPreviewDisplay(cameraSurfaceHolder);
-            camera.startPreview();
-            previewing = true;
+        } else {
 
-        } catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            try {
+
+                camera.setDisplayOrientation(90);
+                camera.setPreviewDisplay(cameraSurfaceHolder);
+                camera.startPreview();
+                previewing = true;
+
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
+
+
     }
 
     @Override
@@ -224,9 +231,13 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback
     {
         // TODO Auto-generated method stub
         // Checks for the device's cameras and opens front camera, if exists
+
+        ImageView imageView = (ImageView) findViewById(R.id.imageView1);
+        Picasso.with(getApplicationContext()).load(wearable).into(imageView);
+
         try
         {
-            //camera.setDisplayOrientation(90);
+
             Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
             cameraCount = Camera.getNumberOfCameras();
             for ( int camIdx = 0; camIdx < cameraCount; camIdx++ ) {
@@ -249,11 +260,13 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback
     @Override
     public void surfaceDestroyed(SurfaceHolder holder)
     {
+
         // TODO Auto-generated method stub
         camera.stopPreview();
         camera.release();
         camera = null;
         previewing = false;
+
     }
 
     public void setDrawable(Drawable drawable) {
