@@ -9,4 +9,17 @@
     <color name="blue"> #577aa7</color>
     <color name="green">#55c892</color>
     <color name="gray">#696969</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="background">#0044AA</color>
+    <color name="bluelight">#449DEF</color>
+    <color name="lightblue">#add8e6</color>
+    <color name="bluedark">#2F6699</color>
+    <color name="greenlight">#70C656</color>
+    <color name="greendark">#53933F</color>
+    <color name="orangelight">#F3AE1B</color>
+    <color name="orangedark">#BB6008</color>
+    <color name="black">#000000</color>
+    <color name="yellow">#eeee38</color>
+    <color name="yellowbright">#FFFF00</color>
 </resources>

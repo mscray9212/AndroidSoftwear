@@ -195,7 +195,7 @@ public class Cart extends AppCompatActivity {
     }
 
     public void updateCart() {
-        
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

@@ -1,4 +1,205 @@
 <?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    tools:context=".MainActivity">
+
+
+    <RelativeLayout
+        android:id="@+id/single_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:weightSum="1"
+        android:layout_weight="2">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/item_image_height"
+            android:background="@color/bluelight"
+            android:layout_weight="0.69"
+            android:id="@+id/relativeLayout"
+            android:layout_alignParentTop="true">
+
+
+            <!-- Product Image -->
+            <ImageView
+                android:id="@+id/icon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/missing"
+                android:layout_alignWithParentIfMissing="false"
+                android:baselineAlignBottom="true"
+                android:clickable="false"
+                android:cropToPadding="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:background="@color/white"
+                android:paddingTop="5dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@+id/product_name" />
+
+
+            <TextView
+                android:id="@+id/product_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_weight="1"
+                android:text="Product"
+                android:maxLines="1"
+                android:textColor="@color/white"
+
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:gravity="center_horizontal"
+                android:foregroundGravity="center_horizontal"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentTop="true" />
+
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="65dp"
+                android:layout_height="30dp"
+                android:visibility="invisible"
+                android:textColor="@color/bluelight"
+                android:background="@color/yellowbright"
+                android:gravity="center|center_horizontal"
+                android:text="Try Me!"
+                android:id="@+id/try_btn"
+                android:layout_gravity="left"
+                android:textSize="13dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true" />
+
+            <TextView
+                android:id="@+id/product_dept"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Department"
+                android:maxLines="1"
+                android:textColor="@color/blue"
+
+                android:textSize="12sp"
+                android:gravity="center_horizontal"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="0.16"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/vertical_divider_welcome"
+                android:layout_alignBottom="@+id/product_name"
+                android:layout_alignParentStart="true" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="200dp"
+            android:layout_below="@+id/relativeLayout"
+            android:background="@color/lightblue"
+            android:id="@+id/relativeLayout2"
+            android:paddingBottom="5dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:orientation="horizontal"
+            android:id="@+id/linearLayout"
+            android:layout_alignEnd="@+id/product_desc"
+            android:layout_marginBottom="36dp"
+            android:background="@color/greendark">
+
+            <!-- Product Name -->
+
+            <!-- Product Price -->
+        </LinearLayout>
+
+        <!-- Product Description -->
+
+        <TextView
+            android:id="@+id/product_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Description"
+            android:maxLines="5"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:gravity="center_vertical|center_horizontal"
+            android:layout_weight="0.10"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="51dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:textStyle="italic" />
+
+        <TextView
+            android:id="@+id/product_qty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:text="Qty:"
+            android:textColor="@color/white"
+            android:layout_gravity="right"
+            android:textSize="18dp"
+            android:layout_alignTop="@+id/product_price"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:id="@+id/product_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Price"
+            android:layout_marginRight="0dp"
+            android:textColor="@color/green"
+            android:gravity="right"
+            android:layout_gravity="right"
+            android:textSize="18dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignEnd="@+id/product_desc"
+            android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:orientation="horizontal"
+                android:id="@+id/linearLayout2"
+                android:background="@color/bluedark"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true" />
+
+        </RelativeLayout>
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="105dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:background="@drawable/shape"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="@string/try_me"
+            android:id="@+id/cart_btn"
+            android:layout_gravity="right"
+            android:layout_marginLeft="1dp"
+            android:layout_marginRight="1dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignEnd="@+id/relativeLayout2" />
+
+    </RelativeLayout>
+
+</RelativeLayout>
+<!--
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -20,7 +221,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/item_image_height">
 
-            <!-- Product Image -->
+             Product Image
             <ImageView
                 android:id="@+id/icon"
                 android:layout_width="match_parent"
@@ -54,7 +255,7 @@
             android:layout_marginTop="10dp"
             android:orientation="horizontal" >
 
-            <!-- Product Name -->
+             Product Name
             <TextView
                 android:id="@+id/product_name"
                 android:layout_width="match_parent"
@@ -67,7 +268,7 @@
                 android:textSize="15sp"
                 android:textStyle="bold"/>
 
-            <!-- Product Price -->
+             Product Price
             <TextView
                 android:id="@+id/product_price"
                 android:layout_width="match_parent"
@@ -85,7 +286,7 @@
             android:layout_marginLeft="10dp"
             android:orientation="horizontal" >
 
-            <!-- Product Department -->
+             Product Department
             <TextView
                 android:id="@+id/product_dept"
                 android:layout_width="wrap_content"
@@ -96,7 +297,7 @@
                 android:textSize="15sp"
                 android:layout_weight="0.12" />
 
-            <!-- Product Quantity -->
+             Product Quantity
             <TextView
                 android:id="@+id/product_qty"
                 android:layout_width="wrap_content"
@@ -108,7 +309,7 @@
                 android:textColor="#48bf7f" />
         </LinearLayout>
 
-        <!-- Product Description -->
+         Product Description
         <TextView
             android:id="@+id/product_desc"
             android:layout_width="match_parent"
@@ -147,3 +348,4 @@
     </LinearLayout>
 
 </LinearLayout>
+-->
