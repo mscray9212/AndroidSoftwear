@@ -20,7 +20,9 @@ import com.android.softwear.process.ConnectDB;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 //Willa
 import android.content.res.TypedArray;
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static Account currentAccount = new Account();
     static Integer cartSize = 0;
+    Integer cartItem = 0;
     static Integer size = 0;
     private TextView getData;
     private String user;
@@ -58,9 +61,11 @@ public class MainActivity extends AppCompatActivity {
         //actionBar.setDisplayShowTitleEnabled(false);
         //actionBar.show();
         getData = (TextView) findViewById(R.id.textView_hello);
+        /*
         if(Search.cartStatus()) {
             new getCartIcon().execute();
         }
+        */
         Button register = (Button)findViewById(R.id.registerButton);
 
         register.setOnClickListener(new View.OnClickListener() {
@@ -182,10 +187,19 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        new getCartIcon().execute();
+        /*
         int items = getCartNumber();
         cartMenuItem = menu.findItem(R.id.action_cart);
-        getCartItems(items, cartMenuItem);
-        Log.d(TAG, "getCartNumber() = " + items);
+        int cartItems = 0;
+        try {
+            cartItems = new returnCartItems().execute().get().size();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        getCartItems(cartItems, cartMenuItem);
+        */
+        //Log.d(TAG, "getCartNumber() = " + cartItems);
         this.menu = menu;
         return true;
     }
@@ -195,6 +209,19 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         if(loggedIn) {
             update();
+        }
+        if(!loggedIn) {
+            /*
+            int cartItems = 0;
+            try {
+                cartMenuItem = menu.findItem(R.id.action_cart);
+                cartItems = new returnCartItems().execute().get().size();
+                getCartItems(cartItems, cartMenuItem);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            */
+            new getCartIcon().execute();
         }
     }
 
@@ -290,6 +317,16 @@ public class MainActivity extends AppCompatActivity {
             setContentView(R.layout.activity_main);
             setUser(currentAccount);
             setLog(false);
+            /*
+            int cartItems = 0;
+            try {
+                cartMenuItem = menu.findItem(R.id.action_cart);
+                cartItems = new returnCartItems().execute().get().size();
+                getCartItems(cartItems, cartMenuItem);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            */
             new getCartIcon().execute();
         }
 
@@ -298,6 +335,16 @@ public class MainActivity extends AppCompatActivity {
 
     public void update() {
         Log.d(TAG, "Logged in: " + loggedIn);
+        /*
+        int cartItems = 0;
+        try {
+            cartMenuItem = menu.findItem(R.id.action_cart);
+            cartItems = new returnCartItems().execute().get().size();
+            getCartItems(cartItems, cartMenuItem);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        */
         new getCartIcon().execute();
     }
 
@@ -324,8 +371,18 @@ public class MainActivity extends AppCompatActivity {
 
         protected void onPostExecute(Void result) {
             setUser(currentAccount);
-            //FgetData.setText(queryResult);
+            //getData.setText(queryResult);
             setLog(true);
+            /*
+            int cartItems = 0;
+            try {
+                cartMenuItem = menu.findItem(R.id.action_cart);
+                cartItems = new returnCartItems().execute().get().size();
+                getCartItems(cartItems, cartMenuItem);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            */
             new getCartIcon().execute();
             super.onPostExecute(result);
         }
@@ -393,8 +450,79 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public class returnCartItems extends AsyncTask<Void, Void, ArrayList<Product>> {
+        String tempUser = user;
+        Product product = null;
+        ArrayList<Product> tempItems = new ArrayList<>();
+        List<Integer> skus = new ArrayList<>();
+
+        @Override
+        protected void onPreExecute() {
+
+        }
+
+        @Override
+        protected ArrayList<Product> doInBackground(Void... arg0) {
+
+            if(tempUser != null) {
+
+                try {
+                    Connection conn = ConnectDB.getConnection();
+                    String queryString = "SELECT * FROM Orders WHERE `User_Name` = '" + tempUser + "'";
+                    PreparedStatement st = conn.prepareStatement(queryString);
+                    final ResultSet result = st.executeQuery(queryString);
+                    while (result.next()) {
+                        try {
+                            skus.add(result.getInt("SKU"));
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    conn.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    Connection conn = ConnectDB.getConnection();
+                    String queryString = "SELECT * FROM Inventory";
+                    PreparedStatement st = conn.prepareStatement(queryString);
+                    final ResultSet result = st.executeQuery(queryString);
+                    while (result.next()) {
+                        for (int i = 0; i < skus.size(); i++) {
+                            if (skus.get(i) == result.getInt("SKU")) {
+                                product = new Product();
+                                product.setProduct_name(result.getString("Name"));
+                                product.setSKU(result.getInt("SKU"));
+                                product.setProduct_dept(result.getString("Department"));
+                                product.setProduct_desc(result.getString("Description"));
+                                product.setPrice(result.getFloat("Price"));
+                                product.setProduct_qty(result.getInt("Quantity")-(result.getInt("Quantity")-1));
+                                product.setProduct_img(result.getString("Image"));
+                                tempItems.add(product);
+                            }
+                        }
+                    }
+                    conn.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+            return tempItems;
+        }
+    }
+
     public class getCartIcon extends AsyncTask<Void, Void, Void> {
         String tempUser = currentAccount.getUsername();
+
+        @Override
+        protected void onPreExecute() {
+            try {
+                cartMenuItem = menu.findItem(R.id.action_cart);
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+        }
 
         @Override
         protected Void doInBackground(Void... arg0) {
@@ -422,8 +550,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(Void result) {
-            if(cartNum > 0) {
+            try {
                 getCartItems(cartNum, cartMenuItem);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
             super.onPostExecute(result);
         }
@@ -433,16 +563,16 @@ public class MainActivity extends AppCompatActivity {
     public void setUser(Account acct) {
         String aloha;
         if(acct.getFirst_name() != null && acct.getFirst_name() != "Guest") {
-            aloha = "Welcome, " + acct.getFirst_name() + "!";
+            aloha = acct.getFirst_name();
             setContentView(R.layout.activity_user);
             TextView textName = (TextView) findViewById(R.id.textView_hello);
             textName.setTextSize(25);
             textName.setText(aloha);
             setTitle(acct.getFirst_name());
-
+            /*
             if(Search.cartStatus()) {
                 new getCartIcon().execute();
-            }
+            } */
             Button register = (Button)findViewById(R.id.registerButton);
 
             register.setOnClickListener(new View.OnClickListener() {
@@ -528,15 +658,15 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
        /* If want to have logout go to login screen
-       setContentView(R.layout.activity_login);
-        setTitle("Hello, Guest");
+          setContentView(R.layout.activity_login);
+          setTitle("Hello, Guest");
         */
             aloha = "Welcome, Guest!";
             setContentView(R.layout.activity_user);
             TextView textName = (TextView) findViewById(R.id.textView_hello);
             textName.setTextSize(25);
             textName.setText(aloha);
-            setTitle("Hello, Guest");
+            setTitle("Softwear");
 
         }
     }
@@ -580,7 +710,6 @@ public class MainActivity extends AppCompatActivity {
                     product = new Product();
                     product.setSKU(result.getInt("SKU"));
                     product.setProduct_name(result.getString("Name"));
-
                     product.setProduct_dept(result.getString("Department"));
                     product.setPrice(result.getFloat("Price"));
                     product.setProduct_desc(result.getString("Description"));

@@ -21,9 +21,14 @@ public class ConnectDB {
             String db_user = "mscray1";
             String db_pass = "qazZAQ123321";
             String url = "jdbc:mysql://198.71.227.92:3306/softwear";
-            //String url = "jdbc:mysql://10.0.2.2:3306/softwear";
-            //String db_user = "mscray1";
-            //String db_pass = "";
+
+            //SCHOOL SERVER CONFIGURATION LISTED BELOW:
+            /*
+            String db_user = "g03dbf15webuser";
+            String db_pass = "{zX-vtJe3UR,";
+            String url = "jdbc:mysql://frankencluster.com:3306/g03dbf15";
+             */
+
             Properties connectionProps = new Properties();
             connectionProps.put("user", db_user);
             connectionProps.put("password", db_pass);
